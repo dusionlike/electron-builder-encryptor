@@ -44,6 +44,10 @@
     "test": "vitest",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "adm-zip": "^0.5.9",
+    "asar": "^3.2.0"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^0.25.2",
     "@antfu/ni": "^0.17.2",
@@ -62,9 +66,5 @@
     "unbuild": "^0.7.6",
     "vite": "^3.0.4",
     "vitest": "^0.19.1"
-  },
-  "dependencies": {
-    "adm-zip": "^0.5.9",
-    "asar": "^3.2.0"
   }
 }
