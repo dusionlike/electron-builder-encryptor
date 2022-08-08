@@ -2,6 +2,7 @@ import { execSync } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 import crypto from 'crypto'
+import originalFs from 'original-fs'
 
 /**
  * js code to byte code
@@ -45,7 +46,7 @@ export function encAes(buf: Buffer) {
 
 export function readFileMd5(filePath: string) {
   return new Promise(resolve => {
-    const stream = fs.createReadStream(filePath)
+    const stream = originalFs.createReadStream(filePath)
     const hash = crypto.createHash('md5')
     stream.on('data', chunk => {
       hash.update(chunk)
@@ -85,4 +86,8 @@ export function md5Salt(key: string, re = 0): string {
   const hash = crypto.createHash('md5')
   hash.update(res)
   return hash.digest('hex')
+}
+
+export async function readAppAsarMd5(appAsarDir: string) {
+  return md5((await readFileMd5(appAsarDir)) + md5Salt('ft*xx9527'))
 }

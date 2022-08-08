@@ -17,6 +17,7 @@ importers:
       eslint: ^8.20.0
       eslint-define-config: ^1.6.0
       mime: ^3.0.0
+      original-fs: ^1.2.0
       tsup: ^6.2.1
       typescript: ^4.7.4
       vite: ^3.0.4
@@ -36,6 +37,7 @@ importers:
       electron-builder: 23.3.3
       eslint: 8.20.0
       eslint-define-config: 1.6.0
+      original-fs: 1.2.0
       tsup: 6.2.1_typescript@4.7.4
       typescript: 4.7.4
       vite: 3.0.4
@@ -3458,6 +3460,10 @@ packages:
       prelude-ls: 1.2.1
       type-check: 0.4.0
       word-wrap: 1.2.3
+    dev: true
+
+  /original-fs/1.2.0:
+    resolution: {integrity: sha512-IGo+qFumpIV65oDchJrqL0BOk9kr82fObnTesNJt8t3YgP6vfqcmRs0ofPzg3D9PKMeBHt7lrg1k/6L+oFdS8g==}
     dev: true
 
   /p-cancelable/1.1.0:

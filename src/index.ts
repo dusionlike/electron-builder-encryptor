@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import asar from 'asar'
 import AdmZip from 'adm-zip'
-import { compileToBytenode, encAes, md5, md5Salt, readFileMd5 } from './encrypt'
+import { compileToBytenode, encAes, readAppAsarMd5 } from './encrypt'
 import type { AfterPackContext } from 'electron-builder'
 
 /**
@@ -56,7 +56,7 @@ exports.default = async function (context: AfterPackContext) {
   // 搞回去
   await asar.createPackage(tempAppDir, appAsarDir)
 
-  const asarMd5 = md5((await readFileMd5(appAsarDir)) + md5Salt('ft*xx9527'))
+  const asarMd5 = await readAppAsarMd5(appAsarDir)
 
   await fs.promises.writeFile(
     path.join(resourcesDir, 'license.dat'),
