@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import asar from 'asar'
 import AdmZip from 'adm-zip'
-import { aes, compileToBytenode, md5, md5Salt, readFileMd5 } from './encrypt'
+import { compileToBytenode, encAes, md5, md5Salt, readFileMd5 } from './encrypt'
 import type { AfterPackContext } from 'electron-builder'
 
 /**
@@ -18,9 +18,25 @@ exports.default = async function (context: AfterPackContext) {
   // 先解压到缓存目录
   asar.extractAll(appAsarDir, tempAppDir)
 
+  const packageJson = JSON.parse(
+    await fs.promises.readFile(path.join(tempAppDir, 'package.json'), 'utf8')
+  )
+  const mainJsPath = path.join(tempAppDir, packageJson.main)
+  const mainDir = path.dirname(mainJsPath)
+
+  const mainJsCPath = path.join(mainDir, 'main-c.jsc')
+
+  // 往main.js添加preload.js
+  await fs.promises.writeFile(
+    mainJsPath,
+    `${await fs.promises.readFile(
+      './node_modules/electron-builder-encryptor/dist/preload.js',
+      'utf-8'
+    )}\n${await fs.promises.readFile(mainJsPath, 'utf-8')}`,
+    'utf-8'
+  )
+
   // 将main.js加密
-  const mainJsPath = path.join(tempAppDir, 'main.js')
-  const mainJsCPath = path.join(tempAppDir, 'main-c.jsc')
   await compileToBytenode(mainJsPath, mainJsCPath)
 
   // 修改入口文件
@@ -30,8 +46,12 @@ exports.default = async function (context: AfterPackContext) {
     'utf-8'
   )
 
+  const rendererDir = path.join(mainDir, 'renderer')
+
   // 加密渲染进程
-  await buidMainApp(tempAppDir, path.join(tempAppDir, 'renderer.node'))
+  await buidMainApp(rendererDir, path.join(mainDir, 'renderer.node'))
+
+  await fs.promises.rm(rendererDir, { recursive: true })
 
   // 搞回去
   await asar.createPackage(tempAppDir, appAsarDir)
@@ -55,6 +75,6 @@ async function buidMainApp(input: string, output: string) {
   const zip = new AdmZip()
   zip.addLocalFolder(input)
   let buf = zip.toBuffer()
-  buf = aes(buf)
+  buf = encAes(buf)
   await fs.promises.writeFile(output, buf)
 }

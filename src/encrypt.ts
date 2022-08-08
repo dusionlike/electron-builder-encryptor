@@ -33,7 +33,7 @@ export async function compileToBytenode(input: string, output: string) {
  * @param buf
  * @returns
  */
-export function aes(buf: Buffer) {
+export function encAes(buf: Buffer) {
   // 生成随机的 16 字节初始化向量 IV
   const iv = crypto.randomBytes(16)
   const cipher = crypto.createCipheriv('aes-256-cbc', md5Salt('ft*xx9527'), iv)

@@ -1,5 +1,8 @@
+import fs from 'fs'
+import AdmZip from 'adm-zip'
 import { describe, expect, it } from 'vitest'
-import { md5Salt } from '../src/encrypt'
+import { encAes, md5Salt } from '../src/encrypt'
+import { decAes, getAppResourcesMap } from '../src/decrypt'
 
 describe('index', () => {
   it('md5Salt', () => {
@@ -7,5 +10,28 @@ describe('index', () => {
     expect(md5Salt('fdsfcsfsd1561561ds651f65ds1f65dsf6516zfeffeffsf')).toEqual(
       '8f0432b0044d25b610f5efddc0d9ec13'
     )
+  })
+})
+
+describe('encrypt', () => {
+  it('dec text', () => {
+    let buf = fs.readFileSync('test/test-file.txt')
+    buf = encAes(buf)
+    buf = decAes(buf)
+    expect(buf.toString()).toEqual(
+      fs.readFileSync('test/test-file.txt').toString()
+    )
+  })
+
+  it('enc renderer', () => {
+    // 加密
+    const zip = new AdmZip()
+    zip.addLocalFolder('test/renderer')
+    let buf = zip.toBuffer()
+    buf = encAes(buf)
+
+    const appResourcesMap = getAppResourcesMap(buf)
+
+    expect([...appResourcesMap.keys()]).toEqual(['css/index.css', 'index.html'])
   })
 })
