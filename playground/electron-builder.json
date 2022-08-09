@@ -24,5 +24,8 @@
     "allowToChangeInstallationDirectory": true,
     "deleteAppDataOnUninstall": false
   },
+  "linux": {
+    "target": "deb"
+  },
   "afterPack": "node_modules/electron-builder-encryptor"
 }

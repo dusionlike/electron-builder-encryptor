@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "keywords": [],
-  "license": "ISC",
-  "author": "",
+  "license": "MIT",
+  "homepage": "https://github.com/antfu/electron-builder-encryptor#readme",
+  "author": "dusionlike <751069244@qq.com>",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
