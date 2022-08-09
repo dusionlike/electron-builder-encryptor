@@ -18,6 +18,7 @@ importers:
       eslint-define-config: ^1.6.0
       mime: ^3.0.0
       original-fs: ^1.2.0
+      pnpm: ^7.9.0
       tsup: ^6.2.1
       typescript: ^4.7.4
       vite: ^3.0.4
@@ -38,6 +39,7 @@ importers:
       electron-builder: 23.3.3
       eslint: 8.20.0
       eslint-define-config: 1.6.0
+      pnpm: 7.9.0
       tsup: 6.2.1_typescript@4.7.4
       typescript: 4.7.4
       vite: 3.0.4
@@ -3616,6 +3618,12 @@ packages:
   /pluralize/8.0.0:
     resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
     engines: {node: '>=4'}
+    dev: true
+
+  /pnpm/7.9.0:
+    resolution: {integrity: sha512-xkIVw73yJm/h5M4VvFIS5Q+gQCRDrp3r92g58PtcCK86aZCa7EQ6q6ivdfTAz0KsAVgloA6Anub28n6wju5v3w==}
+    engines: {node: '>=14.6'}
+    hasBin: true
     dev: true
 
   /postcss-load-config/3.1.4:
