@@ -1,7 +1,6 @@
 {
   "name": "electron-builder-encryptor",
   "version": "0.1.0",
-  "packageManager": "pnpm@7.2.1",
   "description": "",
   "keywords": [],
   "license": "MIT",
