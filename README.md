@@ -24,7 +24,7 @@ simple electron package encryption tool
 ```bash
 npm i electron-builder-encryptor -D
 
-# 这4个库需要添加到项目中
+# These 4 libraries need to be added to the project
 npm i adm-zip
 npm i bytenode
 npm i mime
@@ -33,7 +33,7 @@ npm i original-fs
 
 Add `afterPack` to `electron-builder` configuration
 
-```json
+```json5
 // package.json
 {
     "build": {
@@ -45,7 +45,7 @@ Add `afterPack` to `electron-builder` configuration
 
 or
 
-```json
+```json5
 // electron-builder.json
 {
     "asar": true,

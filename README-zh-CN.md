@@ -33,7 +33,7 @@ npm i original-fs
 
 在 `electron-builder` 配置中添加 `afterPack`
 
-```json
+```json5
 // package.json
 {
     "build": {
@@ -45,7 +45,7 @@ npm i original-fs
 
 或者
 
-```json
+```json5
 // electron-builder.json
 {
     "asar": true,
