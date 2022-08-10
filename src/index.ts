@@ -76,7 +76,7 @@ exports.default = async function (context: AfterPackContext) {
     'utf-8'
   )
 
-  // await fs.promises.rm(tempAppDir, { recursive: true })
+  await fs.promises.rm(tempAppDir, { recursive: true })
 }
 
 /**
