@@ -46,6 +46,18 @@ exports.default = async function (context: AfterPackContext) {
     'utf-8'
   )
 
+  // 将renderer preload.js加密
+  const rendererPreloadJsPath = path.join(mainDir, 'preload.js')
+  if (fs.existsSync(rendererPreloadJsPath)) {
+    const rendererPreloadJsCPath = path.join(mainDir, 'preload-c.jsc')
+    await compileToBytenode(rendererPreloadJsPath, rendererPreloadJsCPath)
+    await fs.promises.writeFile(
+      rendererPreloadJsPath,
+      `"use strict";require('bytenode');require('v8').setFlagsFromString('--no-lazy');require('./preload-c.jsc');`,
+      'utf-8'
+    )
+  }
+
   const rendererDir = path.join(mainDir, 'renderer')
 
   // 加密渲染进程
@@ -64,7 +76,7 @@ exports.default = async function (context: AfterPackContext) {
     'utf-8'
   )
 
-  await fs.promises.rm(tempAppDir, { recursive: true })
+  // await fs.promises.rm(tempAppDir, { recursive: true })
 }
 
 /**

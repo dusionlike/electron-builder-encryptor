@@ -4,7 +4,7 @@
   "directories": {
     "output": "release/${version}"
   },
-  "files": ["main.js", "renderer"],
+  "files": ["main.js", "preload.js", "renderer"],
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
     "target": ["dmg"]
