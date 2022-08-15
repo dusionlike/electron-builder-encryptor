@@ -12,7 +12,7 @@ export function decAes(buf: Buffer) {
   const encrypted = buf.slice(16)
   const decipher = crypto.createDecipheriv(
     'aes-256-cbc',
-    md5Salt('ft*xx9527'),
+    md5Salt(__encryptorConfig.key || 'ft*xx9527'),
     iv
   )
   let decrypted = decipher.update(encrypted)

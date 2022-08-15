@@ -3,23 +3,30 @@
   "version": "0.2.1",
   "packageManager": "pnpm@7.9.0",
   "description": "simple electron package encryption tool",
-  "keywords": ["electron", "simple", "electron-builder", "encrypt", "bytenode"],
+  "keywords": [
+    "electron",
+    "simple",
+    "electron-builder",
+    "encrypt",
+    "bytenode"
+  ],
   "license": "MIT",
-  "homepage": "https://github.com/antfu/electron-builder-encryptor#readme",
-  "bugs": "https://github.com/antfu/electron-builder-encryptor/issues",
+  "homepage": "https://github.com/dusionlike/electron-builder-encryptor#readme",
+  "bugs": "https://github.com/dusionlike/electron-builder-encryptor/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/antfu/electron-builder-encryptor.git"
+    "url": "git+https://github.com/dusionlike/electron-builder-encryptor.git"
   },
   "author": "dusionlike",
   "sideEffects": false,
   "files": [
     "dist"
   ],
-  "main": "./dist/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsup-node src/index.ts src/preload.ts",
-    "dev": "tsup-node src/index.ts src/preload.ts --watch",
+    "build": "tsup-node",
+    "dev": "tsup-node --watch",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest",
@@ -29,7 +36,8 @@
     "adm-zip": "^0.5.9",
     "asar": "^3.2.0",
     "mime": "^3.0.0",
-    "original-fs": "^1.2.0"
+    "original-fs": "^1.2.0",
+    "tsup": "^6.2.1"
   },
   "devDependencies": {
     "@antfu/ni": "^0.17.2",
@@ -43,7 +51,6 @@
     "eslint": "^8.20.0",
     "eslint-define-config": "^1.6.0",
     "pnpm": "^7.9.0",
-    "tsup": "^6.2.1",
     "typescript": "^4.7.4",
     "vite": "^3.0.4",
     "vitest": "^0.19.1"

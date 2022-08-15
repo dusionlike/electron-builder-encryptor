@@ -4,7 +4,7 @@
   "description": "",
   "keywords": [],
   "license": "MIT",
-  "homepage": "https://github.com/antfu/electron-builder-encryptor#readme",
+  "homepage": "https://github.com/dusionlike/electron-builder-encryptor#readme",
   "author": "dusionlike <751069244@qq.com>",
   "main": "main.js",
   "scripts": {

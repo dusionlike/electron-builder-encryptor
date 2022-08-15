@@ -42,7 +42,7 @@ app.whenReady().then(() => {
 /**
  * 监听asar文件的有没有被篡改，如果出现篡改则中断程序
  */
-export function wacthClientModify() {
+function wacthClientModify() {
   const execDir = path.dirname(process.execPath)
   const appAsarDir = path.join(execDir, 'resources', 'app.asar')
 
@@ -51,7 +51,7 @@ export function wacthClientModify() {
       path.join(execDir, 'resources', 'license.dat'),
       'utf-8'
     )
-    const asarMd5 = await readAppAsarMd5(appAsarDir)
+    const asarMd5 = await readAppAsarMd5(appAsarDir, __encryptorConfig.key)
 
     if (verifyMd5 !== asarMd5) {
       const focusedWin = BrowserWindow.getFocusedWindow()

@@ -3,13 +3,24 @@ import path from 'path'
 import asar from 'asar'
 import AdmZip from 'adm-zip'
 import { compileToBytenode, encAes, readAppAsarMd5 } from './encrypt'
+import { buildConfig } from './config'
+import type { UserConfigExport } from './config'
 import type { AfterPackContext } from 'electron-builder'
 
 /**
  * 在打包成exe之前做点什么
  * @param {import('electron-builder').AfterPackContext} context
  */
-exports.default = async function (context: AfterPackContext) {
+export default async function (context: AfterPackContext) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  let encryptorConfig = require(path.resolve(
+    process.cwd(),
+    'node_modules/.electron-builder-encryptor/encryptor.config.js'
+  ))
+
+  encryptorConfig = (encryptorConfig.default ||
+    encryptorConfig) as UserConfigExport
+
   const tempAppDir = path.join(context.appOutDir, '../', 'app')
 
   const resourcesDir = path.join(context.appOutDir, 'resources')
@@ -36,6 +47,8 @@ exports.default = async function (context: AfterPackContext) {
     'utf-8'
   )
 
+  await buildConfig(mainJsPath)
+
   // 将main.js加密
   await compileToBytenode(mainJsPath, mainJsCPath)
 
@@ -61,14 +74,18 @@ exports.default = async function (context: AfterPackContext) {
   const rendererDir = path.join(mainDir, 'renderer')
 
   // 加密渲染进程
-  await buidMainApp(rendererDir, path.join(mainDir, 'renderer.node'))
+  await buidMainApp(
+    rendererDir,
+    path.join(mainDir, 'renderer.node'),
+    encryptorConfig.key
+  )
 
   await fs.promises.rm(rendererDir, { recursive: true })
 
   // 搞回去
   await asar.createPackage(tempAppDir, appAsarDir)
 
-  const asarMd5 = await readAppAsarMd5(appAsarDir)
+  const asarMd5 = await readAppAsarMd5(appAsarDir, encryptorConfig.key)
 
   await fs.promises.writeFile(
     path.join(resourcesDir, 'license.dat'),
@@ -83,10 +100,12 @@ exports.default = async function (context: AfterPackContext) {
  * 将mainapp加密打包并藏起来
  * @param { string } input
  */
-async function buidMainApp(input: string, output: string) {
+async function buidMainApp(input: string, output: string, key?: string) {
   const zip = new AdmZip()
   zip.addLocalFolder(input)
   let buf = zip.toBuffer()
-  buf = encAes(buf)
+  buf = encAes(buf, key)
   await fs.promises.writeFile(output, buf)
 }
+
+export { defineConfig } from './config'

@@ -34,10 +34,10 @@ export async function compileToBytenode(input: string, output: string) {
  * @param buf
  * @returns
  */
-export function encAes(buf: Buffer) {
+export function encAes(buf: Buffer, key = 'ft*xx9527') {
   // 生成随机的 16 字节初始化向量 IV
   const iv = crypto.randomBytes(16)
-  const cipher = crypto.createCipheriv('aes-256-cbc', md5Salt('ft*xx9527'), iv)
+  const cipher = crypto.createCipheriv('aes-256-cbc', md5Salt(key), iv)
   let encrypted = cipher.update(buf)
   encrypted = Buffer.concat([encrypted, cipher.final()])
   // 合并 iv 和 加密数据
@@ -88,6 +88,6 @@ export function md5Salt(key: string, re = 0): string {
   return hash.digest('hex')
 }
 
-export async function readAppAsarMd5(appAsarDir: string) {
-  return md5((await readFileMd5(appAsarDir)) + md5Salt('ft*xx9527'))
+export async function readAppAsarMd5(appAsarDir: string, key = 'ft*xx9527') {
+  return md5((await readFileMd5(appAsarDir)) + md5Salt(key))
 }
