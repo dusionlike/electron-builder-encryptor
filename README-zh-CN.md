@@ -67,9 +67,23 @@ if (!app.isPackaged) {
 
 > 注意：需要加密的渲染进程必须放在入口文件 `main.js` 所在目录下的 `renderer` 文件夹内
 
+## 配置
+
+```ts
+// encryptor.config.ts 或者 encryptor.config.js
+import { defineConfig } from 'electron-builder-encryptor'
+
+export default defineConfig({
+    /**
+     * 加密的密钥
+     */
+    key: 'xxx000777',
+})
+```
+
 ## TODO
 
-后续会增加配置文件，支持配置自定义密钥、加密方法、协议等……
+更多的配置……
 
 ## 许可证
 

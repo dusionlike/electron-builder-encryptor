@@ -67,9 +67,23 @@ if (!app.isPackaged) {
 
 > Note: The renderer process that needs to be encrypted must be placed in the `renderer` folder under the directory where the entry file `main.js` is located
 
+## Configuration
+
+```ts
+// encryptor.config.ts or encryptor.config.js
+import { defineConfig } from 'electron-builder-encryptor'
+
+export default defineConfig({
+    /**
+     * encryption key
+     */
+    key: 'xxx000777',
+})
+```
+
 ## TODO
 
-Configuration files will be added in the future to support configuring custom keys, encryption methods, protocols, etc...
+more configuration
 
 ## License
 
