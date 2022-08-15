@@ -2,9 +2,9 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { build } from 'tsup'
 
-export async function buildConfig(mainJsPath: string) {
-  const outDir = 'node_modules/.electron-builder-encryptor'
+const outDir = 'node_modules/.electron-builder-encryptor'
 
+export async function buildConfig() {
   if (!fs.existsSync(outDir)) {
     fs.promises.mkdir(outDir)
   }
@@ -31,11 +31,15 @@ export async function buildConfig(mainJsPath: string) {
       'utf-8'
     )
   }
+}
+
+export async function mergeConfig(mainJsPath: string) {
+  const outConfigPath = path.resolve(outDir, 'encryptor.config.js')
 
   const preConfigCode = `"use strict";var __encryptorConfig = require('${outConfigPath.replace(
     /\\/g,
     '/'
-  )}');`
+  )}');__encryptorConfig = __encryptorConfig.default || __encryptorConfig;`
 
   const tempMainPath = path.join(outDir, 'main.js')
 

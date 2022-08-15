@@ -3,7 +3,7 @@ import path from 'path'
 import asar from 'asar'
 import AdmZip from 'adm-zip'
 import { compileToBytenode, encAes, readAppAsarMd5 } from './encrypt'
-import { buildConfig } from './config'
+import { buildConfig, mergeConfig } from './config'
 import type { UserConfigExport } from './config'
 import type { AfterPackContext } from 'electron-builder'
 
@@ -12,14 +12,8 @@ import type { AfterPackContext } from 'electron-builder'
  * @param {import('electron-builder').AfterPackContext} context
  */
 export default async function (context: AfterPackContext) {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  let encryptorConfig = require(path.resolve(
-    process.cwd(),
-    'node_modules/.electron-builder-encryptor/encryptor.config.js'
-  ))
-
-  encryptorConfig = (encryptorConfig.default ||
-    encryptorConfig) as UserConfigExport
+  await buildConfig()
+  const encryptorConfig = getConfig()
 
   const tempAppDir = path.join(context.appOutDir, '../', 'app')
 
@@ -47,7 +41,7 @@ export default async function (context: AfterPackContext) {
     'utf-8'
   )
 
-  await buildConfig(mainJsPath)
+  await mergeConfig(mainJsPath)
 
   // 将main.js加密
   await compileToBytenode(mainJsPath, mainJsCPath)
@@ -106,6 +100,19 @@ async function buidMainApp(input: string, output: string, key?: string) {
   let buf = zip.toBuffer()
   buf = encAes(buf, key)
   await fs.promises.writeFile(output, buf)
+}
+
+export function getConfig() {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  let encryptorConfig = require(path.resolve(
+    process.cwd(),
+    'node_modules/.electron-builder-encryptor/encryptor.config.js'
+  ))
+
+  encryptorConfig = (encryptorConfig.default ||
+    encryptorConfig) as UserConfigExport
+
+  return encryptorConfig
 }
 
 export { defineConfig } from './config'

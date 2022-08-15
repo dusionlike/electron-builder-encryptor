@@ -21,7 +21,8 @@ app.whenReady().then(() => {
   wacthClientModify()
 
   const appResourcesMap = getAppResourcesMap(
-    fs.readFileSync(path.join(__dirname, 'renderer.node'))
+    fs.readFileSync(path.join(__dirname, 'renderer.node')),
+    __encryptorConfig.key
   )
 
   protocol.registerBufferProtocol('myclient', (request, callback) => {
