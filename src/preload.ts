@@ -56,16 +56,15 @@ function wacthClientModify() {
 
     if (verifyMd5 !== asarMd5) {
       const focusedWin = BrowserWindow.getFocusedWindow()
+      const msg = {
+        message:
+          'The program has been tampered with, and the program is about to exit!',
+        type: 'error',
+      }
       if (focusedWin) {
-        dialog.showMessageBoxSync(focusedWin, {
-          message: '检测到程序被篡改，程序即将退出！',
-          type: 'error',
-        })
+        dialog.showMessageBoxSync(focusedWin, msg)
       } else {
-        dialog.showMessageBoxSync({
-          message: '检测到程序被篡改，程序即将退出！',
-          type: 'error',
-        })
+        dialog.showMessageBoxSync(msg)
       }
       app.quit()
     }
