@@ -1,6 +1,6 @@
 {
   "name": "electron-builder-encryptor",
-  "version": "0.3.1",
+  "version": "0.5.0",
   "packageManager": "pnpm@7.9.0",
   "description": "simple electron package encryption tool",
   "keywords": [
