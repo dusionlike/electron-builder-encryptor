@@ -15,7 +15,9 @@ const privileges = {
   stream: true,
 }
 
-protocol.registerSchemesAsPrivileged([{ scheme: 'myclient', privileges }])
+const appProtocol = __encryptorConfig.protocol || 'myclient'
+
+protocol.registerSchemesAsPrivileged([{ scheme: appProtocol, privileges }])
 
 app.whenReady().then(() => {
   wacthClientModify()
@@ -25,9 +27,9 @@ app.whenReady().then(() => {
     __encryptorConfig.key
   )
 
-  protocol.registerBufferProtocol('myclient', (request, callback) => {
+  protocol.registerBufferProtocol(appProtocol, (request, callback) => {
     try {
-      let url = request.url.replace('myclient://apps/', '')
+      let url = request.url.replace(`${appProtocol}://apps/`, '')
       url = url.split(/#|\?/)[0]
       callback({
         data: appResourcesMap.get(url),

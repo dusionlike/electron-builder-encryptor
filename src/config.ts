@@ -82,6 +82,11 @@ export declare interface UserConfig {
    * encryption key
    */
   key?: string
+  /**
+   * renderer protocol scheme
+   * @default 'myclient'
+   */
+  protocol?: string
 }
 
 export function defineConfig(arg: UserConfigExport): UserConfigExport {

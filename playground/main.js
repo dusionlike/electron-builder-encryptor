@@ -14,7 +14,7 @@ function createWindow() {
   if (!app.isPackaged) {
     mainWindow.loadFile('renderer/index.html')
   } else {
-    mainWindow.loadURL('myclient://apps/index.html')
+    mainWindow.loadURL('myclient2://apps/index.html')
   }
 }
 
