@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import asar from 'asar'
 import AdmZip from 'adm-zip'
+import { log } from 'builder-util'
 import { compileToBytenode, encAes, readAppAsarMd5 } from './encrypt'
 import { buildConfig, mergeConfig } from './config'
 import type { UserConfigExport } from './config'
@@ -12,6 +13,8 @@ import type { AfterPackContext } from 'electron-builder'
  * @param {import('electron-builder').AfterPackContext} context
  */
 export default async function (context: AfterPackContext) {
+  const time = Date.now()
+
   await buildConfig()
   const encryptorConfig = getConfig()
 
@@ -88,6 +91,8 @@ export default async function (context: AfterPackContext) {
   )
 
   await fs.promises.rm(tempAppDir, { recursive: true })
+
+  log.info(`encrypt success! takes ${Date.now() - time}ms.`)
 }
 
 /**
