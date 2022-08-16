@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { build } from 'tsup'
+import type { Privileges } from 'electron'
 
 const outDir = 'node_modules/.electron-builder-encryptor'
 
@@ -87,6 +88,12 @@ export declare interface UserConfig {
    * @default 'myclient'
    */
   protocol?: string
+  /**
+   * electron custom schemes to be registered with options.
+   * @default
+   * {standard: true, secure: true, bypassCSP: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, stream: true}
+   */
+  privileges?: Privileges
 }
 
 export function defineConfig(arg: UserConfigExport): UserConfigExport {

@@ -5,7 +5,7 @@ import { BrowserWindow, app, dialog, protocol } from 'electron'
 import { getAppResourcesMap } from './decrypt'
 import { readAppAsarMd5 } from './encrypt'
 
-const privileges = {
+const privileges = __encryptorConfig.privileges || {
   standard: true,
   secure: true,
   bypassCSP: true,
