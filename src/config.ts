@@ -23,6 +23,7 @@ export async function buildConfig() {
       dts: false,
       minify: false,
       skipNodeModulesBundle: true,
+      silent: true,
     })
   } else {
     await fs.promises.writeFile(
@@ -59,6 +60,7 @@ export async function mergeConfig(mainJsPath: string) {
     dts: false,
     minify: true,
     skipNodeModulesBundle: true,
+    silent: true,
   })
 
   await fs.promises.rm(tempMainPath)
