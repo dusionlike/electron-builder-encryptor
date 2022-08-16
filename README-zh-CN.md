@@ -17,7 +17,6 @@
 - 🤷‍♂️ 只在使用 `electron-builder` 打包时生效，不影响开发调试
 - 🔒 使用 [bytenode](https://github.com/bytenode/bytenode) 加密主进程，自定义方法加密渲染进程
 - 👀 防篡改 app.asar 文件
-- ⚙️ ~~支持颗粒度的配置，包括密钥、加密方法、协议等~~ （后续支持）
 
 ## 使用
 
@@ -81,9 +80,31 @@ export default defineConfig({
 })
 ```
 
-## TODO
+所有配置
 
-更多的配置……
+```ts
+export declare interface UserConfig {
+    /**
+     * encryption key
+     */
+    key?: string
+    /**
+     * renderer protocol scheme
+     * @default 'myclient'
+     */
+    protocol?: string
+    /**
+     * electron custom schemes to be registered with options.
+     * @default
+     * {standard: true, secure: true, bypassCSP: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, stream: true}
+     */
+    privileges?: Privileges
+    /**
+     * 渲染进程加密后的存放路径，以程序执行目录为根节点，如 xx/zz.pkg
+     */
+    rendererOutPath?: string
+}
+```
 
 ## 许可证
 

@@ -17,7 +17,6 @@ simple electron package encryption tool
 - 🤷‍♂️ It only takes effect when packaging with `electron-builder`, and does not affect development and debugging
 - 🔒 Use [bytenode](https://github.com/bytenode/bytenode) to encrypt the main process and custom method to encrypt the renderer process
 - 👀 Prevent tampering with the `app.asar` file
-- ⚙️ ~~Support granular configuration, including keys, encryption methods, protocols, etc.~~ (subsequent support)
 
 ## Usage
 
@@ -81,9 +80,31 @@ export default defineConfig({
 })
 ```
 
-## TODO
+all configuration
 
-more configuration
+```ts
+export declare interface UserConfig {
+    /**
+     * encryption key
+     */
+    key?: string
+    /**
+     * renderer protocol scheme
+     * @default 'myclient'
+     */
+    protocol?: string
+    /**
+     * electron custom schemes to be registered with options.
+     * @default
+     * {standard: true, secure: true, bypassCSP: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, stream: true}
+     */
+    privileges?: Privileges
+    /**
+     * The encrypted storage path of the rendering process, with the program execution directory as the root node
+     */
+    rendererOutPath?: string
+}
+```
 
 ## License
 
