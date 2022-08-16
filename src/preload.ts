@@ -22,8 +22,15 @@ protocol.registerSchemesAsPrivileged([{ scheme: appProtocol, privileges }])
 app.whenReady().then(() => {
   wacthClientModify()
 
+  let rendererPath = ''
+  if (__encryptorConfig.rendererOutPath) {
+    rendererPath = path.join(process.cwd(), __encryptorConfig.rendererOutPath)
+  } else {
+    rendererPath = path.join(__dirname, 'renderer.node')
+  }
+
   const appResourcesMap = getAppResourcesMap(
-    fs.readFileSync(path.join(__dirname, 'renderer.node')),
+    fs.readFileSync(rendererPath),
     __encryptorConfig.key
   )
 

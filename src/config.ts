@@ -94,6 +94,10 @@ export declare interface UserConfig {
    * {standard: true, secure: true, bypassCSP: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, stream: true}
    */
   privileges?: Privileges
+  /**
+   * The encrypted storage path of the rendering process, with the program execution directory as the root node
+   */
+  rendererOutPath?: string
 }
 
 export function defineConfig(arg: UserConfigExport): UserConfigExport {

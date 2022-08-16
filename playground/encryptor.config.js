@@ -13,4 +13,5 @@ export default defineConfig({
     corsEnabled: true,
     stream: true,
   },
+  rendererOutPath: 'renderer/xxx.pkg',
 })

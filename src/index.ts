@@ -69,13 +69,22 @@ export default async function (context: AfterPackContext) {
   }
 
   const rendererDir = path.join(mainDir, 'renderer')
+  const rendererTempPath = path.join(mainDir, 'renderer.node')
 
   // 加密渲染进程
-  await buidMainApp(
-    rendererDir,
-    path.join(mainDir, 'renderer.node'),
-    encryptorConfig.key
-  )
+  await buidMainApp(rendererDir, rendererTempPath, encryptorConfig.key)
+
+  if (encryptorConfig.rendererOutPath) {
+    const rendererOutPath = path.join(
+      context.appOutDir,
+      encryptorConfig.rendererOutPath
+    )
+    const rendererOutDir = path.dirname(rendererOutPath)
+    if (!fs.existsSync(rendererOutDir)) {
+      await fs.promises.mkdir(rendererOutDir, { recursive: true })
+    }
+    await fs.promises.rename(rendererTempPath, rendererOutPath)
+  }
 
   await fs.promises.rm(rendererDir, { recursive: true })
 
@@ -114,10 +123,9 @@ export function getConfig() {
     'node_modules/.electron-builder-encryptor/encryptor.config.js'
   ))
 
-  encryptorConfig = (encryptorConfig.default ||
-    encryptorConfig) as UserConfigExport
+  encryptorConfig = encryptorConfig.default || encryptorConfig
 
-  return encryptorConfig
+  return encryptorConfig as UserConfigExport
 }
 
 export { defineConfig } from './config'
