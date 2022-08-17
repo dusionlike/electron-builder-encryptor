@@ -7,11 +7,13 @@ export default defineConfig(() => {
       entry: ['src/index.ts'],
       dts: true,
       skipNodeModulesBundle: true,
+      format: ['cjs', 'esm'],
     },
     {
       platform: 'node',
       entry: ['src/preload.ts'],
       skipNodeModulesBundle: true,
+      format: ['cjs', 'esm'],
     },
   ]
 })

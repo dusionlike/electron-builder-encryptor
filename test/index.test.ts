@@ -3,6 +3,7 @@ import AdmZip from 'adm-zip'
 import { describe, expect, it } from 'vitest'
 import { encAes, md5Salt } from '../src/encrypt'
 import { decAes, getAppResourcesMap } from '../src/decrypt'
+import { treeshakeCode } from '../src/config'
 
 describe('index', () => {
   it('md5Salt', () => {
@@ -33,5 +34,28 @@ describe('encrypt', () => {
     const appResourcesMap = getAppResourcesMap(buf)
 
     expect([...appResourcesMap.keys()]).toEqual(['css/index.css', 'index.html'])
+  })
+})
+
+describe('code', () => {
+  it('treeshakeCode', () => {
+    const code = `// ../dist/index.mjs
+__toESM(require("fs"), 1);
+__toESM(require("path"), 1);
+__toESM(require("asar"), 1);
+__toESM(require("adm-zip"), 1);
+require("builder-util");
+require("child_process");
+__toESM(require("fs"), 1);
+__toESM(require("path"), 1);
+__toESM(require("crypto"), 1);
+__toESM(require("original-fs"), 1);
+__toESM(require("fs"), 1);
+__toESM(require("path"), 1);
+require("tsup");`
+
+    const nCode = treeshakeCode(code)
+
+    expect(nCode).toEqual('// ../dist/index.mjs')
   })
 })

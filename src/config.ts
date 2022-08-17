@@ -10,22 +10,30 @@ export async function buildConfig() {
     fs.promises.mkdir(outDir)
   }
 
-  const configDir = findConfig(['encryptor.config.ts', 'encryptor.config.js'])
+  const configPath = findConfig(['encryptor.config.ts', 'encryptor.config.js'])
 
   const outConfigPath = path.resolve(outDir, 'encryptor.config.js')
 
   // 先打包config
-  if (configDir) {
+  if (configPath) {
     await build({
-      entry: [configDir],
+      entry: [configPath],
       outDir,
       platform: 'node',
       sourcemap: false,
       dts: false,
       minify: false,
-      skipNodeModulesBundle: true,
+      skipNodeModulesBundle: false,
       silent: true,
+      external: [/^[^./]|^\.[^./]|^\.\.[^/]/],
+      noExternal: ['electron-builder-encryptor'],
+      bundle: true,
+      treeshake: true,
+      config: false,
     })
+    let code = await fs.promises.readFile(outConfigPath, 'utf-8')
+    code = treeshakeCode(code)
+    await fs.promises.writeFile(outConfigPath, code, 'utf-8')
   } else {
     await fs.promises.writeFile(
       outConfigPath,
@@ -36,12 +44,9 @@ export async function buildConfig() {
 }
 
 export async function mergeConfig(mainJsPath: string) {
-  const outConfigPath = path.resolve(outDir, 'encryptor.config.js')
+  // const outConfigPath = path.resolve(outDir, 'encryptor.config.js')
 
-  const preConfigCode = `"use strict";var __encryptorConfig = require('${outConfigPath.replace(
-    /\\/g,
-    '/'
-  )}');__encryptorConfig = __encryptorConfig.default || __encryptorConfig;`
+  const preConfigCode = `"use strict";var __encryptorConfig = require('./encryptor.config.js');__encryptorConfig = __encryptorConfig.default || __encryptorConfig;`
 
   const tempMainPath = path.join(outDir, 'main.js')
 
@@ -62,6 +67,9 @@ export async function mergeConfig(mainJsPath: string) {
     minify: true,
     skipNodeModulesBundle: true,
     silent: true,
+    bundle: true,
+    treeshake: true,
+    config: false,
   })
 
   await fs.promises.rm(tempMainPath)
@@ -74,6 +82,11 @@ function findConfig(dirs: string[]) {
     }
   }
   return null
+}
+
+export function treeshakeCode(code: string) {
+  const newLocal = /\n(__toESM\()?require\(".+"\)(, 1\))?;/gm
+  return code.replace(newLocal, '')
 }
 
 export declare type UserConfigExport = UserConfig
