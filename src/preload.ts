@@ -5,7 +5,7 @@ import { BrowserWindow, app, dialog, protocol } from 'electron'
 import { getAppResourcesMap } from './decrypt'
 import { readAppAsarMd5 } from './encrypt'
 
-const cwd = path.dirname(process.execPath)
+const execDir = path.dirname(process.execPath)
 
 const privileges = __encryptorConfig.privileges || {
   standard: true,
@@ -26,7 +26,7 @@ app.whenReady().then(() => {
 
   let rendererPath = ''
   if (__encryptorConfig.rendererOutPath) {
-    rendererPath = path.join(cwd, __encryptorConfig.rendererOutPath)
+    rendererPath = path.join(execDir, __encryptorConfig.rendererOutPath)
   } else {
     rendererPath = path.join(__dirname, 'renderer.node')
   }
