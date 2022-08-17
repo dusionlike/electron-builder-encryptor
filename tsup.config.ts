@@ -6,10 +6,12 @@ export default defineConfig(() => {
       platform: 'node',
       entry: ['src/index.ts'],
       dts: true,
+      skipNodeModulesBundle: true,
     },
     {
       platform: 'node',
       entry: ['src/preload.ts'],
+      skipNodeModulesBundle: true,
     },
   ]
 })

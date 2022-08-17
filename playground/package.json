@@ -23,6 +23,6 @@
     "@types/mime": "^3.0.1",
     "electron": "^20.0.1",
     "electron-builder": "^23.3.3",
-    "electron-builder-encryptor": "workspace:*"
+    "electron-builder-encryptor": "link:.."
   }
 }
