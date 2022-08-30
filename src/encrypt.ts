@@ -19,7 +19,7 @@ export async function compileToBytenode(input: string, output: string) {
     "const bytenode = require('bytenode');",
     "require('v8').setFlagsFromString('--no-lazy');",
     `bytenode.compileFile('${input}', '${output}');`,
-    "require('electron').app.quit();",
+    'process.exit();',
   ].join('\n')
 
   await fs.promises.writeFile(compilerFilePath, compilerCode, 'utf-8')
