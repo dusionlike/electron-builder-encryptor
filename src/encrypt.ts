@@ -91,3 +91,7 @@ export function md5Salt(key: string, re = 0): string {
 export async function readAppAsarMd5(appAsarDir: string, key = 'ft*xx9527') {
   return md5((await readFileMd5(appAsarDir)) + md5Salt(key))
 }
+
+export function readAppAsarMd5Sync(appAsarDir: string, key = 'ft*xx9527') {
+  return md5(md5(originalFs.readFileSync(appAsarDir)) + md5Salt(key))
+}

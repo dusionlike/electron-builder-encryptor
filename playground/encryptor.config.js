@@ -14,4 +14,5 @@ export default defineConfig({
     stream: true,
   },
   rendererOutPath: 'renderer/xxx.pkg',
+  syncValidationChanges: true,
 })

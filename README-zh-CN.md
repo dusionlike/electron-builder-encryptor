@@ -103,6 +103,10 @@ export declare interface UserConfig {
      * 渲染进程加密后的存放路径，以程序执行目录为根节点，如 xx/zz.pkg
      */
     rendererOutPath?: string
+    /**
+     * 启动app时同步检测程序是否被篡改
+     */
+    syncValidationChanges?: boolean
 }
 ```
 

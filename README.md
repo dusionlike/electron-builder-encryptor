@@ -103,6 +103,10 @@ export declare interface UserConfig {
      * The encrypted storage path of the rendering process, with the program execution directory as the root node
      */
     rendererOutPath?: string
+    /**
+     * Synchronously detect whether the program has been tampered with when starting the app
+     */
+    syncValidationChanges?: boolean
 }
 ```
 

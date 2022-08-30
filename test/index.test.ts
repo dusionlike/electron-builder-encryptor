@@ -1,7 +1,12 @@
 import fs from 'fs'
 import AdmZip from 'adm-zip'
 import { describe, expect, it } from 'vitest'
-import { encAes, md5Salt } from '../src/encrypt'
+import {
+  encAes,
+  md5Salt,
+  readAppAsarMd5,
+  readAppAsarMd5Sync,
+} from '../src/encrypt'
 import { decAes, getAppResourcesMap } from '../src/decrypt'
 import { treeshakeCode } from '../src/config'
 
@@ -34,6 +39,13 @@ describe('encrypt', () => {
     const appResourcesMap = getAppResourcesMap(buf)
 
     expect([...appResourcesMap.keys()]).toEqual(['css/index.css', 'index.html'])
+  })
+
+  it('md5', async () => {
+    const md5Str1 = await readAppAsarMd5('test/test-file.txt')
+    const md5Str2 = readAppAsarMd5Sync('test/test-file.txt')
+
+    expect(md5Str1).toEqual(md5Str2)
   })
 })
 
