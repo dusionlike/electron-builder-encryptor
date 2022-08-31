@@ -64,7 +64,8 @@ __toESM(require("crypto"), 1);
 __toESM(require("original-fs"), 1);
 __toESM(require("fs"), 1);
 __toESM(require("path"), 1);
-require("tsup");`
+require("tsup");
+require('fs');`
 
     const nCode = treeshakeCode(code)
 
