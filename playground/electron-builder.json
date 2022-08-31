@@ -2,7 +2,7 @@
   "appId": "electron-builder-encryptor-demo",
   "asar": true,
   "directories": {
-    "output": "release/${version}"
+    "output": "release"
   },
   "files": ["main.js", "preload.js", "renderer"],
   "mac": {

@@ -85,7 +85,7 @@ function findConfig(dirs: string[]) {
 }
 
 export function treeshakeCode(code: string) {
-  const newLocal = /\n(__toESM\()?require\(".+"\)(, 1\))?;/gm
+  const newLocal = /\n(__toESM\()?require\(["'].+["']\)(, 1\))?;/gm
   return code.replace(newLocal, '')
 }
 
