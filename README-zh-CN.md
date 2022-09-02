@@ -23,11 +23,8 @@
 ```bash
 npm i electron-builder-encryptor -D
 
-# 这4个库需要添加到项目中
-npm i adm-zip
-npm i bytenode
-npm i mime
-npm i original-fs
+# 这5个库需要添加到项目中
+npm i adm-zip bytenode mime original-fs yaml
 ```
 
 在 `electron-builder` 配置中添加 `afterPack`
@@ -99,16 +96,39 @@ export declare interface UserConfig {
      * {standard: true, secure: true, bypassCSP: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, stream: true}
      */
     privileges?: Privileges
-    /**
-     * 渲染进程加密后的存放路径，以程序执行目录为根节点，如 xx/zz.pkg
-     */
-    rendererOutPath?: string
+    renderer?: {
+        /**
+         * renderer entry directory, with the program execution directory as the root node
+         * @default 'renderer'
+         */
+        entry: string
+        /**
+         * The encrypted storage path of the rendering process, with the program execution directory as the root node
+         * @default 'resources/renderer.pkg'
+         */
+        output: string
+    }
     /**
      * 启动app时同步检测程序是否被篡改
      */
     syncValidationChanges?: boolean
 }
 ```
+
+## 从 v0.x 迁移
+
+为了`renderer`和`mian`能单独更新，1.x默认将加密后的renderer.pkg分离出来，如果需要恢复0.x的行为，可以将`renderer.output`设置为 ''
+
+```ts
+export default defineConfig({
+    renderer: {
+        entry: 'renderer',
+        output: ''
+    }
+})
+```
+
+> 当`renderer`文件夹下存在`package.json`时，打包后的`renderer.pkg`目录下会生成`renderer.yml`文件
 
 ## 许可证
 
