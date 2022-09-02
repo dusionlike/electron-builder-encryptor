@@ -5,8 +5,11 @@ import { BrowserWindow, app, dialog, protocol } from 'electron'
 import YAML from 'yaml'
 import { getAppResourcesMap } from './decrypt'
 import { readAppAsarMd5, readAppAsarMd5Sync } from './encrypt'
+import { mergeDefaultConfig } from './default-config'
 
 const execDir = path.dirname(process.execPath)
+
+__encryptorConfig = mergeDefaultConfig(__encryptorConfig)
 
 if (__encryptorConfig.syncValidationChanges) {
   verifyModifySync()

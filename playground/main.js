@@ -14,7 +14,8 @@ function createWindow() {
   if (!app.isPackaged) {
     mainWindow.loadFile('renderer/index.html')
   } else {
-    mainWindow.loadURL('myclient2://apps/index.html')
+    // eslint-disable-next-line no-undef
+    mainWindow.loadURL(`${__encryptorConfig.protocol}://apps/index.html`)
   }
 }
 

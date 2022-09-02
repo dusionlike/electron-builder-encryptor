@@ -6,7 +6,7 @@ import YAML from 'yaml'
 import { log } from 'builder-util'
 import { compileToBytenode, encAes, readAppAsarMd5 } from './encrypt'
 import { buildConfig, mergeConfig } from './config'
-import type { UserConfigExport } from './config'
+import { mergeDefaultConfig } from './default-config'
 import type { AfterPackContext } from 'electron-builder'
 
 /**
@@ -162,7 +162,7 @@ export function getConfig() {
 
   encryptorConfig = encryptorConfig.default || encryptorConfig
 
-  return encryptorConfig as Required<UserConfigExport>
+  return mergeDefaultConfig(encryptorConfig)
 }
 
 export { defineConfig } from './config'
