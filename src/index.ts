@@ -22,10 +22,10 @@ export default async function (context: AfterPackContext) {
   const tempAppDir = path.join(context.appOutDir, '../', 'app')
 
   const resourcesDir = path.join(context.appOutDir, 'resources')
-  const appAsarDir = path.join(resourcesDir, 'app.asar')
+  const appAsarPath = path.join(resourcesDir, 'app.asar')
 
   // 先解压到缓存目录
-  asar.extractAll(appAsarDir, tempAppDir)
+  asar.extractAll(appAsarPath, tempAppDir)
 
   const packageJson = JSON.parse(
     await fs.promises.readFile(path.join(tempAppDir, 'package.json'), 'utf8')
@@ -86,30 +86,50 @@ export default async function (context: AfterPackContext) {
       await fs.promises.mkdir(rendererOutDir, { recursive: true })
     }
     await fs.promises.rename(rendererTempPath, rendererOutPath)
+
+    const rendererPackageJsonPath = path.join(rendererDir, 'package.json')
+    if (fs.existsSync(rendererPackageJsonPath)) {
+      await writeLicense(
+        rendererOutPath,
+        path.resolve(process.cwd(), 'package.json'),
+        path.join(rendererOutDir, `${entryBaseName}.yml`),
+        encryptorConfig.key
+      )
+    }
   }
 
   await fs.promises.rm(rendererDir, { recursive: true })
 
   // 搞回去
-  await asar.createPackage(tempAppDir, appAsarDir)
+  await asar.createPackage(tempAppDir, appAsarPath)
 
-  const asarMd5 = await readAppAsarMd5(appAsarDir, encryptorConfig.key)
-
-  const appPackage = await getAppPackage()
-  const yamlData = {
-    name: appPackage.name,
-    version: appPackage.version,
-    md5: asarMd5,
-  }
-  await fs.promises.writeFile(
+  await writeLicense(
+    appAsarPath,
+    path.resolve(process.cwd(), 'package.json'),
     path.join(resourcesDir, 'app.yml'),
-    YAML.stringify(yamlData),
-    'utf-8'
+    encryptorConfig.key
   )
 
   await fs.promises.rm(tempAppDir, { recursive: true })
 
   log.info(`encrypt success! takes ${Date.now() - time}ms.`)
+}
+
+async function writeLicense(
+  fileDir: string,
+  packageJsonPath: string,
+  output: string,
+  key: string
+) {
+  const asarMd5 = await readAppAsarMd5(fileDir, key)
+
+  const appPackage = await getAppPackage(packageJsonPath)
+  const yamlData = {
+    name: appPackage.name,
+    version: appPackage.version,
+    md5: asarMd5,
+  }
+  await fs.promises.writeFile(output, YAML.stringify(yamlData), 'utf-8')
 }
 
 /**
@@ -124,11 +144,8 @@ async function buidMainApp(input: string, output: string, key?: string) {
   await fs.promises.writeFile(output, buf)
 }
 
-async function getAppPackage() {
-  const appPackage = await fs.promises.readFile(
-    path.resolve(process.cwd(), 'package.json'),
-    'utf8'
-  )
+async function getAppPackage(jsonPath: string) {
+  const appPackage = await fs.promises.readFile(jsonPath, 'utf8')
   return JSON.parse(appPackage) as {
     name: string
     version: string
