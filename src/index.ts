@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import asar from 'asar'
 import AdmZip from 'adm-zip'
+import YAML from 'yaml'
 import { log } from 'builder-util'
 import { compileToBytenode, encAes, readAppAsarMd5 } from './encrypt'
 import { buildConfig, mergeConfig } from './config'
@@ -21,10 +22,10 @@ export default async function (context: AfterPackContext) {
   const tempAppDir = path.join(context.appOutDir, '../', 'app')
 
   const resourcesDir = path.join(context.appOutDir, 'resources')
-  const appAsarDir = path.join(resourcesDir, 'app.asar')
+  const appAsarPath = path.join(resourcesDir, 'app.asar')
 
   // 先解压到缓存目录
-  asar.extractAll(appAsarDir, tempAppDir)
+  asar.extractAll(appAsarPath, tempAppDir)
 
   const packageJson = JSON.parse(
     await fs.promises.readFile(path.join(tempAppDir, 'package.json'), 'utf8')
@@ -68,40 +69,67 @@ export default async function (context: AfterPackContext) {
     )
   }
 
-  const rendererDir = path.join(mainDir, 'renderer')
-  const rendererTempPath = path.join(mainDir, 'renderer.node')
+  const rendererDir = path.join(mainDir, encryptorConfig.renderer.entry)
+  const entryBaseName = path.basename(encryptorConfig.renderer.entry)
+  const rendererTempPath = path.join(mainDir, `${entryBaseName}.pkg`)
 
   // 加密渲染进程
   await buidMainApp(rendererDir, rendererTempPath, encryptorConfig.key)
 
-  if (encryptorConfig.rendererOutPath) {
+  if (encryptorConfig.renderer.output) {
     const rendererOutPath = path.join(
       context.appOutDir,
-      encryptorConfig.rendererOutPath
+      encryptorConfig.renderer.output
     )
     const rendererOutDir = path.dirname(rendererOutPath)
     if (!fs.existsSync(rendererOutDir)) {
       await fs.promises.mkdir(rendererOutDir, { recursive: true })
     }
     await fs.promises.rename(rendererTempPath, rendererOutPath)
+
+    const rendererPackageJsonPath = path.join(rendererDir, 'package.json')
+    if (fs.existsSync(rendererPackageJsonPath)) {
+      await writeLicense(
+        rendererOutPath,
+        path.resolve(process.cwd(), 'package.json'),
+        path.join(rendererOutDir, `${entryBaseName}.yml`),
+        encryptorConfig.key
+      )
+    }
   }
 
   await fs.promises.rm(rendererDir, { recursive: true })
 
   // 搞回去
-  await asar.createPackage(tempAppDir, appAsarDir)
+  await asar.createPackage(tempAppDir, appAsarPath)
 
-  const asarMd5 = await readAppAsarMd5(appAsarDir, encryptorConfig.key)
-
-  await fs.promises.writeFile(
-    path.join(resourcesDir, 'license.dat'),
-    asarMd5,
-    'utf-8'
+  await writeLicense(
+    appAsarPath,
+    path.resolve(process.cwd(), 'package.json'),
+    path.join(resourcesDir, 'app.yml'),
+    encryptorConfig.key
   )
 
   await fs.promises.rm(tempAppDir, { recursive: true })
 
   log.info(`encrypt success! takes ${Date.now() - time}ms.`)
+}
+
+async function writeLicense(
+  fileDir: string,
+  packageJsonPath: string,
+  output: string,
+  key: string
+) {
+  const asarMd5 = await readAppAsarMd5(fileDir, key)
+
+  const appPackage = await getAppPackage(packageJsonPath)
+  const yamlData = {
+    name: appPackage.name,
+    version: appPackage.version,
+    md5: asarMd5,
+  }
+  await fs.promises.writeFile(output, YAML.stringify(yamlData), 'utf-8')
 }
 
 /**
@@ -116,6 +144,15 @@ async function buidMainApp(input: string, output: string, key?: string) {
   await fs.promises.writeFile(output, buf)
 }
 
+async function getAppPackage(jsonPath: string) {
+  const appPackage = await fs.promises.readFile(jsonPath, 'utf8')
+  return JSON.parse(appPackage) as {
+    name: string
+    version: string
+    [key: string]: any
+  }
+}
+
 export function getConfig() {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   let encryptorConfig = require(path.resolve(
@@ -125,7 +162,7 @@ export function getConfig() {
 
   encryptorConfig = encryptorConfig.default || encryptorConfig
 
-  return encryptorConfig as UserConfigExport
+  return encryptorConfig as Required<UserConfigExport>
 }
 
 export { defineConfig } from './config'

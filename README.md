@@ -23,11 +23,8 @@ simple electron package encryption tool
 ```bash
 npm i electron-builder-encryptor -D
 
-# These 4 libraries need to be added to the project
-npm i adm-zip
-npm i bytenode
-npm i mime
-npm i original-fs
+# These 5 libraries need to be added to the project
+npm i adm-zip bytenode mime original-fs yaml
 ```
 
 Add `afterPack` to `electron-builder` configuration
@@ -99,16 +96,39 @@ export declare interface UserConfig {
      * {standard: true, secure: true, bypassCSP: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, stream: true}
      */
     privileges?: Privileges
-    /**
-     * The encrypted storage path of the rendering process, with the program execution directory as the root node
-     */
-    rendererOutPath?: string
+    renderer?: {
+        /**
+         * renderer entry directory, with the program execution directory as the root node
+         * @default 'renderer'
+         */
+        entry: string
+        /**
+         * The encrypted storage path of the rendering process, with the program execution directory as the root node
+         * @default 'resources/renderer.pkg'
+         */
+        output: string
+    }
     /**
      * Synchronously detect whether the program has been tampered with when starting the app
      */
     syncValidationChanges?: boolean
 }
 ```
+
+## Migrating from v0.x
+
+In order to update `renderer` and `mian` separately, 1.x separates the encrypted renderer.pkg by default. If you need to restore the behavior of 0.x, you can set `renderer.output` to ''
+
+```ts
+export default defineConfig({
+    renderer: {
+        entry: 'renderer',
+        output: ''
+    }
+})
+```
+
+> When `package.json` exists in the `renderer` folder, the `renderer.yml` file will be generated in the packaged `renderer.pkg` directory
 
 ## License
 

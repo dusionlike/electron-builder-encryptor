@@ -1,6 +1,6 @@
 {
   "name": "electron-builder-encryptor",
-  "version": "0.6.1",
+  "version": "1.0.0",
   "packageManager": "pnpm@7.9.0",
   "description": "simple electron package encryption tool",
   "keywords": [
@@ -39,7 +39,8 @@
     "builder-util": "^23.4.0",
     "mime": "^3.0.0",
     "original-fs": "^1.2.0",
-    "tsup": "6.2.1"
+    "tsup": "6.2.1",
+    "yaml": "^2.1.1"
   },
   "devDependencies": {
     "@antfu/ni": "^0.17.2",
