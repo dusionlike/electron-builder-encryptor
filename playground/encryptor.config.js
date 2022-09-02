@@ -13,6 +13,9 @@ export default defineConfig({
     corsEnabled: true,
     stream: true,
   },
-  rendererOutPath: 'renderer/xxx.pkg',
+  renderer: {
+    entry: 'renderer',
+    output: 'resources/renderer.pkg',
+  },
   syncValidationChanges: true,
 })

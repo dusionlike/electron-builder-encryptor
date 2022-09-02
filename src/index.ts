@@ -68,16 +68,17 @@ export default async function (context: AfterPackContext) {
     )
   }
 
-  const rendererDir = path.join(mainDir, 'renderer')
-  const rendererTempPath = path.join(mainDir, 'renderer.node')
+  const rendererDir = path.join(mainDir, encryptorConfig.renderer.entry)
+  const entryBaseName = path.basename(encryptorConfig.renderer.entry)
+  const rendererTempPath = path.join(mainDir, `${entryBaseName}.pkg`)
 
   // 加密渲染进程
   await buidMainApp(rendererDir, rendererTempPath, encryptorConfig.key)
 
-  if (encryptorConfig.rendererOutPath) {
+  if (encryptorConfig.renderer.output) {
     const rendererOutPath = path.join(
       context.appOutDir,
-      encryptorConfig.rendererOutPath
+      encryptorConfig.renderer.output
     )
     const rendererOutDir = path.dirname(rendererOutPath)
     if (!fs.existsSync(rendererOutDir)) {
@@ -125,7 +126,7 @@ export function getConfig() {
 
   encryptorConfig = encryptorConfig.default || encryptorConfig
 
-  return encryptorConfig as UserConfigExport
+  return encryptorConfig as Required<UserConfigExport>
 }
 
 export { defineConfig } from './config'

@@ -107,16 +107,46 @@ export declare interface UserConfig {
    * {standard: true, secure: true, bypassCSP: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, stream: true}
    */
   privileges?: Privileges
-  /**
-   * The encrypted storage path of the rendering process, with the program execution directory as the root node
-   */
-  rendererOutPath?: string
+  renderer?: {
+    /**
+     * renderer entry directory, with the program execution directory as the root node
+     * @default 'renderer'
+     */
+    entry: string
+    /**
+     * The encrypted storage path of the rendering process, with the program execution directory as the root node
+     * @default 'resources/renderer.pkg'
+     */
+    output: string
+  }
   /**
    * Synchronously detect whether the program has been tampered with when starting the app
    */
   syncValidationChanges?: boolean
 }
 
-export function defineConfig(arg: UserConfigExport): UserConfigExport {
-  return arg
+export function defineConfig(
+  arg: UserConfigExport
+): Required<UserConfigExport> {
+  return Object.assign(
+    {
+      key: 'ft*xx9527',
+      protocol: 'myclient',
+      privileges: {
+        standard: true,
+        secure: true,
+        bypassCSP: true,
+        allowServiceWorkers: true,
+        supportFetchAPI: true,
+        corsEnabled: true,
+        stream: true,
+      },
+      renderer: {
+        entry: 'renderer',
+        output: 'resources/renderer.pkg',
+      },
+      syncValidationChanges: false,
+    },
+    arg
+  )
 }

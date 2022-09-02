@@ -11,17 +11,9 @@ if (__encryptorConfig.syncValidationChanges) {
   verifyModifySync()
 }
 
-const privileges = __encryptorConfig.privileges || {
-  standard: true,
-  secure: true,
-  bypassCSP: true,
-  allowServiceWorkers: true,
-  supportFetchAPI: true,
-  corsEnabled: true,
-  stream: true,
-}
+const privileges = __encryptorConfig.privileges
 
-const appProtocol = __encryptorConfig.protocol || 'myclient'
+const appProtocol = __encryptorConfig.protocol
 
 protocol.registerSchemesAsPrivileged([{ scheme: appProtocol, privileges }])
 
@@ -29,10 +21,11 @@ app.whenReady().then(() => {
   wacthClientModify()
 
   let rendererPath = ''
-  if (__encryptorConfig.rendererOutPath) {
-    rendererPath = path.join(execDir, __encryptorConfig.rendererOutPath)
+  if (__encryptorConfig.renderer.output) {
+    rendererPath = path.join(execDir, __encryptorConfig.renderer.output)
   } else {
-    rendererPath = path.join(__dirname, 'renderer.node')
+    const entryBaseName = path.basename(__encryptorConfig.renderer.entry)
+    rendererPath = path.join(__dirname, `${entryBaseName}.pkg`)
   }
 
   const appResourcesMap = getAppResourcesMap(
