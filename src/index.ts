@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import asar from 'asar'
 import AdmZip from 'adm-zip'
+import YAML from 'yaml'
 import { log } from 'builder-util'
 import { compileToBytenode, encAes, readAppAsarMd5 } from './encrypt'
 import { buildConfig, mergeConfig } from './config'
@@ -94,9 +95,15 @@ export default async function (context: AfterPackContext) {
 
   const asarMd5 = await readAppAsarMd5(appAsarDir, encryptorConfig.key)
 
+  const appPackage = await getAppPackage()
+  const yamlData = {
+    name: appPackage.name,
+    version: appPackage.version,
+    md5: asarMd5,
+  }
   await fs.promises.writeFile(
-    path.join(resourcesDir, 'license.dat'),
-    asarMd5,
+    path.join(resourcesDir, 'app.yml'),
+    YAML.stringify(yamlData),
     'utf-8'
   )
 
@@ -115,6 +122,18 @@ async function buidMainApp(input: string, output: string, key?: string) {
   let buf = zip.toBuffer()
   buf = encAes(buf, key)
   await fs.promises.writeFile(output, buf)
+}
+
+async function getAppPackage() {
+  const appPackage = await fs.promises.readFile(
+    path.resolve(process.cwd(), 'package.json'),
+    'utf8'
+  )
+  return JSON.parse(appPackage) as {
+    name: string
+    version: string
+    [key: string]: any
+  }
 }
 
 export function getConfig() {

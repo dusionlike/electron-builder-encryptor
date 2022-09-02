@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import mime from 'mime'
 import { BrowserWindow, app, dialog, protocol } from 'electron'
+import YAML from 'yaml'
 import { getAppResourcesMap } from './decrypt'
 import { readAppAsarMd5, readAppAsarMd5Sync } from './encrypt'
 
@@ -52,10 +53,11 @@ function verifyModifySync() {
   const appAsarDir = path.join(execDir, 'resources', 'app.asar')
   // eslint-disable-next-line no-console
   console.time('syncValidationChanges')
-  const verifyMd5 = fs.readFileSync(
-    path.join(execDir, 'resources', 'license.dat'),
+  const yamlStr = fs.readFileSync(
+    path.join(execDir, 'resources/app.yml'),
     'utf-8'
   )
+  const verifyMd5 = YAML.parse(yamlStr).md5
   const asarMd5 = readAppAsarMd5Sync(appAsarDir, __encryptorConfig.key)
   // eslint-disable-next-line no-console
   console.timeEnd('syncValidationChanges')
@@ -65,10 +67,11 @@ function verifyModifySync() {
 }
 
 const verifyModify = async (appAsarDir: string) => {
-  const verifyMd5 = await fs.promises.readFile(
-    path.join(execDir, 'resources', 'license.dat'),
+  const yamlStr = await fs.promises.readFile(
+    path.join(execDir, 'resources/app.yml'),
     'utf-8'
   )
+  const verifyMd5 = YAML.parse(yamlStr).md5
   const asarMd5 = await readAppAsarMd5(appAsarDir, __encryptorConfig.key)
 
   if (verifyMd5 !== asarMd5) {
