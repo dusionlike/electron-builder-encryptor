@@ -22,7 +22,7 @@
   "devDependencies": {
     "@types/adm-zip": "^0.5.0",
     "@types/mime": "^3.0.1",
-    "electron": "^20.1.0",
+    "electron": "^20.1.2",
     "electron-builder": "^23.3.3",
     "electron-builder-encryptor": "link:.."
   }
