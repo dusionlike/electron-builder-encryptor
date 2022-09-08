@@ -107,6 +107,11 @@ export declare interface UserConfig {
    * {standard: true, secure: true, bypassCSP: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, stream: true}
    */
   privileges?: Privileges
+  /**
+   * Don't call registerSchemesAsPrivileged
+   * @default false
+   */
+  noRegisterSchemes?: boolean
   renderer?: {
     /**
      * renderer entry directory, with the program execution directory as the root node

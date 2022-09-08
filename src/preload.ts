@@ -19,7 +19,8 @@ const privileges = __encryptorConfig.privileges
 
 const appProtocol = __encryptorConfig.protocol
 
-protocol.registerSchemesAsPrivileged([{ scheme: appProtocol, privileges }])
+if (!__encryptorConfig.noRegisterSchemes)
+  protocol.registerSchemesAsPrivileged([{ scheme: appProtocol, privileges }])
 
 app.whenReady().then(() => {
   wacthClientModify()
