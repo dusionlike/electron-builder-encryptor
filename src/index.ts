@@ -39,7 +39,7 @@ export default async function (context: AfterPackContext) {
   await fs.promises.writeFile(
     mainJsPath,
     `${await fs.promises.readFile(
-      './node_modules/electron-builder-encryptor/dist/preload.js',
+      path.join(__dirname, 'preload.js'),
       'utf-8'
     )}\n${await fs.promises.readFile(mainJsPath, 'utf-8')}`,
     'utf-8'
