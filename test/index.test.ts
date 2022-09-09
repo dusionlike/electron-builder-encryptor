@@ -9,6 +9,7 @@ import {
 } from '../src/encrypt'
 import { decAes, getAppResourcesMap } from '../src/decrypt'
 import { treeshakeCode } from '../src/config'
+import { createDefu } from '../src/default-config'
 
 describe('index', () => {
   it('md5Salt', () => {
@@ -70,5 +71,36 @@ require('fs');`
     const nCode = treeshakeCode(code)
 
     expect(nCode).toEqual('// ../dist/index.mjs')
+  })
+})
+
+describe('test defu', () => {
+  it('defu', () => {
+    const defu = createDefu()
+
+    const arg = {
+      protocol: 'xxclient',
+      renderer: {
+        output: 'resources/666.pkg',
+      },
+    }
+
+    expect(
+      defu(arg, {
+        key: 'ft*xx9527',
+        protocol: 'myclient',
+        renderer: {
+          entry: 'renderer',
+          output: 'resources/renderer.pkg',
+        },
+      })
+    ).toMatchObject({
+      key: 'ft*xx9527',
+      protocol: 'xxclient',
+      renderer: {
+        entry: 'renderer',
+        output: 'resources/666.pkg',
+      },
+    })
   })
 })

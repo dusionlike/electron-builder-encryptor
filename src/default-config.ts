@@ -4,27 +4,24 @@ export function mergeDefaultConfig(
   arg: UserConfigExport
 ): Required<UserConfigExport> {
   const defu = createDefu()
-  return defu(
-    {
-      key: 'ft*xx9527',
-      protocol: 'myclient',
-      privileges: {
-        standard: true,
-        secure: true,
-        bypassCSP: true,
-        allowServiceWorkers: true,
-        supportFetchAPI: true,
-        corsEnabled: true,
-        stream: true,
-      },
-      renderer: {
-        entry: 'renderer',
-        output: 'resources/renderer.pkg',
-      },
-      syncValidationChanges: false,
+  return defu(arg, {
+    key: 'ft*xx9527',
+    protocol: 'myclient',
+    privileges: {
+      standard: true,
+      secure: true,
+      bypassCSP: true,
+      allowServiceWorkers: true,
+      supportFetchAPI: true,
+      corsEnabled: true,
+      stream: true,
     },
-    arg
-  )
+    renderer: {
+      entry: 'renderer',
+      output: 'resources/renderer.pkg',
+    },
+    syncValidationChanges: false,
+  })
 }
 
 function isObject(val: any) {
