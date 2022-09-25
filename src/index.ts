@@ -9,11 +9,22 @@ import { buildConfig, mergeConfig } from './config'
 import { mergeDefaultConfig } from './default-config'
 import type { AfterPackContext } from 'electron-builder'
 
+export default function (context: AfterPackContext) {
+  return run(context)
+}
+
+export interface BeforeRePackAsarContext {
+  tempAppDir: string
+}
+
+export interface RunOptions {
+  beforeRePackAsar?: (context: BeforeRePackAsarContext) => Promise<void>
+}
+
 /**
  * 在打包成exe之前做点什么
- * @param {import('electron-builder').AfterPackContext} context
  */
-export default async function (context: AfterPackContext) {
+export async function run(context: AfterPackContext, options: RunOptions = {}) {
   const time = Date.now()
 
   await buildConfig()
@@ -99,6 +110,10 @@ export default async function (context: AfterPackContext) {
   }
 
   await fs.promises.rm(rendererDir, { recursive: true })
+
+  if (options.beforeRePackAsar) {
+    await options.beforeRePackAsar({ tempAppDir })
+  }
 
   // 搞回去
   await asar.createPackage(tempAppDir, appAsarPath)
