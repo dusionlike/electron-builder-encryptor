@@ -81,8 +81,18 @@ export async function mergeConfig(mainJsPath: string) {
               args.kind !== 'entry-point' &&
               args.path !== './encryptor.config.js'
             ) {
+              let importerDir
+              if (
+                args.importer
+                  .replace(/\\/g, '/')
+                  .endsWith('.electron-builder-encryptor/main.js')
+              ) {
+                importerDir = mainJsDir
+              } else {
+                importerDir = path.dirname(args.importer)
+              }
               const resolvePath =
-                path.join(mainJsDir, args.path) +
+                path.join(importerDir, args.path) +
                 (/(\.js|\.json)$/.test(args.path) ? '' : '.js')
               shuldCleanFile.push(resolvePath)
               return {

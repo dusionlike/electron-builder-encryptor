@@ -1,7 +1,7 @@
 const path = require('path')
 const { app, BrowserWindow } = require('electron')
 
-const { testLog } = require('./m-test')
+const { testLog } = require('./m2/m-test')
 
 testLog()
 
