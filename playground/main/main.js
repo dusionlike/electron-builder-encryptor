@@ -1,6 +1,10 @@
 const path = require('path')
 const { app, BrowserWindow } = require('electron')
 
+const { testLog } = require('./m-test')
+
+testLog()
+
 function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 800,

@@ -14,7 +14,7 @@ export default defineConfig({
     stream: true,
   },
   renderer: {
-    entry: 'renderer',
+    entry: '../renderer',
     output: 'resources/renderer.pkg',
   },
   syncValidationChanges: true,

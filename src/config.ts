@@ -44,7 +44,7 @@ export async function buildConfig() {
 }
 
 export async function mergeConfig(mainJsPath: string) {
-  // const outConfigPath = path.resolve(outDir, 'encryptor.config.js')
+  const shuldCleanFile: string[] = []
 
   const preConfigCode = `"use strict";var __encryptorConfig = require('./encryptor.config.js');__encryptorConfig = __encryptorConfig.default || __encryptorConfig;`
 
@@ -57,10 +57,12 @@ export async function mergeConfig(mainJsPath: string) {
     'utf-8'
   )
 
+  const mainJsDir = path.dirname(mainJsPath)
+
   // 再打包一次main.js
   await build({
     entry: [tempMainPath.replace(/\\/g, '/')],
-    outDir: path.dirname(mainJsPath),
+    outDir: mainJsDir,
     platform: 'node',
     sourcemap: false,
     dts: false,
@@ -70,9 +72,35 @@ export async function mergeConfig(mainJsPath: string) {
     bundle: true,
     treeshake: true,
     config: false,
+    esbuildPlugins: [
+      {
+        name: 'readMetafile',
+        setup(build) {
+          build.onResolve({ filter: /.*/ }, args => {
+            if (
+              args.kind !== 'entry-point' &&
+              args.path !== './encryptor.config.js'
+            ) {
+              const resolvePath =
+                path.join(mainJsDir, args.path) +
+                (/(\.js|\.json)$/.test(args.path) ? '' : '.js')
+              shuldCleanFile.push(resolvePath)
+              return {
+                path: resolvePath,
+              }
+            }
+            return null
+          })
+        },
+      },
+    ],
   })
 
-  await fs.promises.rm(tempMainPath)
+  for (const item of shuldCleanFile) {
+    if (item !== mainJsPath) {
+      await fs.promises.rm(item, { recursive: true })
+    }
+  }
 }
 
 function findConfig(dirs: string[]) {

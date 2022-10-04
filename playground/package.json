@@ -6,7 +6,7 @@
   "license": "MIT",
   "homepage": "https://github.com/dusionlike/electron-builder-encryptor#readme",
   "author": "dusionlike <751069244@qq.com>",
-  "main": "main.js",
+  "main": "main/main.js",
   "scripts": {
     "start": "electron .",
     "release": "electron-builder",

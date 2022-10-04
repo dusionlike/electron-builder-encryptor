@@ -58,6 +58,9 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
 
   await mergeConfig(mainJsPath)
 
+  // 删除空目录
+  cleanEmptyDir(tempAppDir, [encryptorConfig.renderer.entry, 'node_modules'])
+
   // 将main.js加密
   await compileToBytenode(mainJsPath, mainJsCPath)
 
@@ -128,6 +131,27 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
   await fs.promises.rm(tempAppDir, { recursive: true })
 
   log.info(`encrypt success! takes ${Date.now() - time}ms.`)
+}
+
+/**
+ * 删除目录下的所有空文件夹
+ */
+function cleanEmptyDir(dir: string, excludes?: string[]) {
+  let files = fs.readdirSync(dir)
+  if (excludes) {
+    files = files.filter(item => !excludes.includes(item))
+  }
+  if (files.length > 0) {
+    files.forEach(file => {
+      const fullPath = path.join(dir, file)
+      if (fs.statSync(fullPath).isDirectory()) {
+        cleanEmptyDir(fullPath)
+        if (fs.readdirSync(fullPath).length === 0) {
+          fs.rmdirSync(fullPath)
+        }
+      }
+    })
+  }
 }
 
 async function writeLicense(
