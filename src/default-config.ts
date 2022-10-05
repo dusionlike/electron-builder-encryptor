@@ -16,6 +16,7 @@ export function mergeDefaultConfig(
       corsEnabled: true,
       stream: true,
     },
+    preload: 'preload.js',
     renderer: {
       entry: 'renderer',
       output: 'resources/renderer.pkg',

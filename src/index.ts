@@ -78,20 +78,32 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
   )
 
   // 将renderer preload.js加密
-  const rendererPreloadJsPath = path.join(mainDir, 'preload.js')
-  if (fs.existsSync(rendererPreloadJsPath)) {
-    const rendererPreloadJsCPath = path.join(mainDir, 'preload-c.jsc')
-    const preloadBundlePath = await buildBundle(
-      path.relative(cwd, rendererPreloadJsPath),
-      shuldCleanFiles
-    )
+  const preloadJsPaths =
+    typeof encryptorConfig.preload === 'string'
+      ? [encryptorConfig.preload]
+      : encryptorConfig.preload
 
-    await compileToBytenode(preloadBundlePath, rendererPreloadJsCPath)
-    await fs.promises.writeFile(
-      rendererPreloadJsPath,
-      `"use strict";require('bytenode');require('v8').setFlagsFromString('--no-lazy');require('./preload-c.jsc');`,
-      'utf-8'
-    )
+  for (const _preloadJsPath of preloadJsPaths) {
+    const preloadJsName = path.basename(_preloadJsPath, '.js')
+    const rendererPreloadJsPath = path.join(mainDir, _preloadJsPath)
+    const preloadJsDir = path.dirname(rendererPreloadJsPath)
+    if (fs.existsSync(rendererPreloadJsPath)) {
+      const rendererPreloadJsCPath = path.join(
+        preloadJsDir,
+        `${preloadJsName}-c.jsc`
+      )
+      const preloadBundlePath = await buildBundle(
+        path.relative(cwd, rendererPreloadJsPath),
+        shuldCleanFiles
+      )
+
+      await compileToBytenode(preloadBundlePath, rendererPreloadJsCPath)
+      await fs.promises.writeFile(
+        rendererPreloadJsPath,
+        `"use strict";require('bytenode');require('v8').setFlagsFromString('--no-lazy');require('./${preloadJsName}-c.jsc');`,
+        'utf-8'
+      )
+    }
   }
 
   // 清理

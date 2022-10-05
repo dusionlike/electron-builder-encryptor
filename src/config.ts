@@ -98,6 +98,11 @@ export declare interface UserConfig {
    * @default false
    */
   noRegisterSchemes?: boolean
+  /**
+   * preload.js directory, with the program execution directory as the root node
+   * @default preload.js
+   */
+  preload?: string | string[]
   renderer?: {
     /**
      * renderer entry directory, with the program execution directory as the root node
