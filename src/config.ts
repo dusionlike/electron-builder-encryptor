@@ -91,9 +91,10 @@ export async function mergeConfig(mainJsPath: string) {
               } else {
                 importerDir = path.dirname(args.importer)
               }
-              const resolvePath =
-                path.join(importerDir, args.path) +
-                (/(\.js|\.json)$/.test(args.path) ? '' : '.js')
+
+              const resolvePath = require.resolve(
+                path.join(importerDir, args.path)
+              )
               shuldCleanFile.push(resolvePath)
               return {
                 path: resolvePath,

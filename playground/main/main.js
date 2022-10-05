@@ -1,9 +1,11 @@
 const path = require('path')
 const { app, BrowserWindow } = require('electron')
 
+const { testLog3 } = require('./m3')
 const { testLog } = require('./m2/m-test')
 
 testLog()
+testLog3()
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
