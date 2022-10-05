@@ -1,3 +1,7 @@
+const { testLog } = require('./m2/m-test')
+
+testLog()
+
 window.addEventListener('DOMContentLoaded', () => {
   const el = document.createElement('p')
   el.innerHTML = 'preload.js is encrypted'

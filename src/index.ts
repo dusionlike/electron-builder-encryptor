@@ -7,6 +7,7 @@ import { log } from 'builder-util'
 import { compileToBytenode, encAes, readAppAsarMd5 } from './encrypt'
 import { buildConfig, mergeConfig } from './config'
 import { mergeDefaultConfig } from './default-config'
+import { buildBundle } from './build'
 import type { AfterPackContext } from 'electron-builder'
 
 export default function (context: AfterPackContext) {
@@ -58,11 +59,16 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
 
   await mergeConfig(mainJsPath)
 
-  // 删除空目录
-  cleanEmptyDir(tempAppDir, [encryptorConfig.renderer.entry, 'node_modules'])
+  const cwd = process.cwd()
+  const shuldCleanFiles = new Set<string>()
+
+  const mainBundlePath = await buildBundle(
+    path.relative(cwd, mainJsPath),
+    shuldCleanFiles
+  )
 
   // 将main.js加密
-  await compileToBytenode(mainJsPath, mainJsCPath)
+  await compileToBytenode(mainBundlePath, mainJsCPath)
 
   // 修改入口文件
   await fs.promises.writeFile(
@@ -75,13 +81,25 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
   const rendererPreloadJsPath = path.join(mainDir, 'preload.js')
   if (fs.existsSync(rendererPreloadJsPath)) {
     const rendererPreloadJsCPath = path.join(mainDir, 'preload-c.jsc')
-    await compileToBytenode(rendererPreloadJsPath, rendererPreloadJsCPath)
+    const preloadBundlePath = await buildBundle(
+      path.relative(cwd, rendererPreloadJsPath),
+      shuldCleanFiles
+    )
+
+    await compileToBytenode(preloadBundlePath, rendererPreloadJsCPath)
     await fs.promises.writeFile(
       rendererPreloadJsPath,
       `"use strict";require('bytenode');require('v8').setFlagsFromString('--no-lazy');require('./preload-c.jsc');`,
       'utf-8'
     )
   }
+
+  // 清理
+  for (const item of shuldCleanFiles) {
+    await fs.promises.rm(item, { recursive: true })
+  }
+  // 删除空目录
+  cleanEmptyDir(tempAppDir, [encryptorConfig.renderer.entry, 'node_modules'])
 
   const rendererDir = path.join(mainDir, encryptorConfig.renderer.entry)
   const entryBaseName = path.basename(encryptorConfig.renderer.entry)

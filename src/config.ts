@@ -44,74 +44,21 @@ export async function buildConfig() {
 }
 
 export async function mergeConfig(mainJsPath: string) {
-  const shuldCleanFile: string[] = []
-
   const preConfigCode = `"use strict";var __encryptorConfig = require('./encryptor.config.js');__encryptorConfig = __encryptorConfig.default || __encryptorConfig;`
-
-  const tempMainPath = path.join(outDir, 'main.js')
 
   // 注入到main.js
   await fs.promises.writeFile(
-    tempMainPath,
+    mainJsPath,
     `${preConfigCode}\n${await fs.promises.readFile(mainJsPath, 'utf-8')}`,
     'utf-8'
   )
 
   const mainJsDir = path.dirname(mainJsPath)
 
-  // 再打包一次main.js
-  await build({
-    entry: [tempMainPath.replace(/\\/g, '/')],
-    outDir: mainJsDir,
-    platform: 'node',
-    sourcemap: false,
-    dts: false,
-    minify: true,
-    skipNodeModulesBundle: true,
-    silent: true,
-    bundle: true,
-    treeshake: true,
-    config: false,
-    esbuildPlugins: [
-      {
-        name: 'readMetafile',
-        setup(build) {
-          build.onResolve({ filter: /.*/ }, args => {
-            if (
-              args.kind !== 'entry-point' &&
-              args.path !== './encryptor.config.js'
-            ) {
-              let importerDir
-              if (
-                args.importer
-                  .replace(/\\/g, '/')
-                  .endsWith('.electron-builder-encryptor/main.js')
-              ) {
-                importerDir = mainJsDir
-              } else {
-                importerDir = path.dirname(args.importer)
-              }
-
-              const resolvePath = require.resolve(
-                path.join(importerDir, args.path)
-              )
-              shuldCleanFile.push(resolvePath)
-              return {
-                path: resolvePath,
-              }
-            }
-            return null
-          })
-        },
-      },
-    ],
-  })
-
-  for (const item of shuldCleanFile) {
-    if (item !== mainJsPath) {
-      await fs.promises.rm(item, { recursive: true })
-    }
-  }
+  await fs.promises.copyFile(
+    path.join(outDir, 'encryptor.config.js'),
+    path.join(mainJsDir, 'encryptor.config.js')
+  )
 }
 
 function findConfig(dirs: string[]) {
