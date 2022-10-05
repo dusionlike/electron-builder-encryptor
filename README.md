@@ -96,6 +96,11 @@ export declare interface UserConfig {
      * {standard: true, secure: true, bypassCSP: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, stream: true}
      */
     privileges?: Privileges
+    /**
+     * preload.js directory, with the program execution directory as the root node
+     * @default preload.js
+     */
+    preload?: string | string[]
     renderer?: {
         /**
          * renderer entry directory, with the program execution directory as the root node
