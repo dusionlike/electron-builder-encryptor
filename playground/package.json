@@ -10,7 +10,8 @@
   "scripts": {
     "start": "electron .",
     "release": "electron-builder",
-    "release:dir": "electron-builder --dir"
+    "release:dir": "electron-builder --dir",
+    "release:dir-ia32": "electron-builder --dir --ia32"
   },
   "dependencies": {
     "adm-zip": "^0.5.9",

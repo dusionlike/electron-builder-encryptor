@@ -12,4 +12,10 @@ window.addEventListener('DOMContentLoaded', () => {
     el.innerHTML = `${type}-version: ${process.versions[type]}`
     document.body.append(el)
   }
+
+  {
+    const el = document.createElement('p')
+    el.innerHTML = `arch: ${process.arch}`
+    document.body.append(el)
+  }
 })

@@ -7,7 +7,11 @@ import originalFs from 'original-fs'
 /**
  * js code to byte code
  */
-export async function compileToBytenode(input: string, output: string) {
+export async function compileToBytenode(
+  input: string,
+  output: string,
+  execPath: string
+) {
   const mainDir = path.dirname(input)
   const compilerFilePath = path.join(mainDir, 'compiler.js')
 
@@ -24,7 +28,7 @@ export async function compileToBytenode(input: string, output: string) {
 
   await fs.promises.writeFile(compilerFilePath, compilerCode, 'utf-8')
 
-  execSync(`electron ${compilerFilePath}`)
+  execSync(`${execPath} ${compilerFilePath}`)
 
   await fs.promises.unlink(compilerFilePath)
 }

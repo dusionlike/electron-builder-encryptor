@@ -55,6 +55,18 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
   const mainJsPath = path.join(tempAppDir, packageJson.main)
   const mainDir = path.dirname(mainJsPath)
 
+  // 将入口改为编译器
+  fs.renameSync(mainJsPath, `${mainJsPath}.tmp`)
+  await fs.promises.writeFile(mainJsPath, 'require(process.argv[1])', 'utf-8')
+  await asar.createPackage(tempAppDir, appAsarPath)
+  fs.renameSync(`${mainJsPath}.tmp`, mainJsPath)
+
+  // 可执行文件
+  let execPath = path.join(appOutDir, packageJson.name)
+  if (context.packager.platform.name === 'windows') {
+    execPath = `${execPath}.exe`
+  }
+
   const mainJsCPath = path.join(mainDir, 'main-c.jsc')
 
   // 往main.js添加preload.js
@@ -78,7 +90,7 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
   )
 
   // 将main.js加密
-  await compileToBytenode(mainBundlePath, mainJsCPath)
+  await compileToBytenode(path.join(cwd, mainBundlePath), mainJsCPath, execPath)
 
   // 修改入口文件
   await fs.promises.writeFile(
@@ -107,7 +119,11 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
         shuldCleanFiles
       )
 
-      await compileToBytenode(preloadBundlePath, rendererPreloadJsCPath)
+      await compileToBytenode(
+        path.join(cwd, preloadBundlePath),
+        rendererPreloadJsCPath,
+        execPath
+      )
       await fs.promises.writeFile(
         rendererPreloadJsPath,
         `"use strict";require('bytenode');require('v8').setFlagsFromString('--no-lazy');require('./${preloadJsName}-c.jsc');`,
