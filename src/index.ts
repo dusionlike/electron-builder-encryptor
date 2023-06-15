@@ -4,7 +4,7 @@ import asar from 'asar'
 import AdmZip from 'adm-zip'
 import YAML from 'yaml'
 import { log } from 'builder-util'
-import { compileToBytenode, encAes, readAppAsarMd5 } from './encrypt'
+import { compileToBytenode, encAes, encryptMd5, readFileMd5 } from './encrypt'
 import { buildConfig, mergeConfig } from './config'
 import { mergeDefaultConfig } from './default-config'
 import { buildBundle } from './build'
@@ -216,13 +216,15 @@ async function writeLicense(
   output: string,
   key: string
 ) {
-  const asarMd5 = await readAppAsarMd5(fileDir, key)
+  const fileMd5 = await readFileMd5(fileDir)
+  const asarMd5 = await encryptMd5(fileMd5, key)
 
   const appPackage = await getAppPackage(packageJsonPath)
   const yamlData = {
     name: appPackage.name,
     version: appPackage.version,
     md5: asarMd5,
+    file_md5: fileMd5,
   }
   await fs.promises.writeFile(output, YAML.stringify(yamlData), 'utf-8')
 }

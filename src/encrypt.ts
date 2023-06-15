@@ -49,7 +49,7 @@ export function encAes(buf: Buffer, key = 'ft*xx9527') {
 }
 
 export function readFileMd5(filePath: string) {
-  return new Promise(resolve => {
+  return new Promise<string>(resolve => {
     const stream = originalFs.createReadStream(filePath)
     const hash = crypto.createHash('md5')
     stream.on('data', chunk => {
@@ -93,9 +93,13 @@ export function md5Salt(key: string, re = 0): string {
 }
 
 export async function readAppAsarMd5(appAsarDir: string, key = 'ft*xx9527') {
-  return md5((await readFileMd5(appAsarDir)) + md5Salt(key))
+  return encryptMd5(await readFileMd5(appAsarDir), key)
+}
+
+export async function encryptMd5(str: string, key = 'ft*xx9527') {
+  return md5(str + md5Salt(key))
 }
 
 export function readAppAsarMd5Sync(appAsarDir: string, key = 'ft*xx9527') {
-  return md5(md5(originalFs.readFileSync(appAsarDir)) + md5Salt(key))
+  return encryptMd5(md5(originalFs.readFileSync(appAsarDir)), key)
 }
