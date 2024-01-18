@@ -62,7 +62,7 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
   fs.renameSync(`${mainJsPath}.tmp`, mainJsPath)
 
   // 可执行文件
-  let execPath = path.join(appOutDir, packageJson.name)
+  let execPath = path.join(appOutDir, context.packager.appInfo.productFilename)
   if (context.packager.platform.name === 'windows') {
     execPath = `${execPath}.exe`
   }
