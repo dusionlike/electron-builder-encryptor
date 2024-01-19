@@ -217,7 +217,7 @@ async function writeLicense(
   key: string
 ) {
   const fileMd5 = await readFileMd5(fileDir)
-  const asarMd5 = await encryptMd5(fileMd5, key)
+  const asarMd5 = encryptMd5(fileMd5, key)
 
   const appPackage = await getAppPackage(packageJsonPath)
   const yamlData = {

@@ -96,7 +96,7 @@ export async function readAppAsarMd5(appAsarDir: string, key = 'ft*xx9527') {
   return encryptMd5(await readFileMd5(appAsarDir), key)
 }
 
-export async function encryptMd5(str: string, key = 'ft*xx9527') {
+export function encryptMd5(str: string, key = 'ft*xx9527') {
   return md5(str + md5Salt(key))
 }
 
