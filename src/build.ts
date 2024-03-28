@@ -1,5 +1,7 @@
 import path from 'path'
+import fs from 'fs'
 import { build } from 'tsup'
+import * as babel from '@babel/core'
 
 export async function buildBundle(
   entryPath: string,
@@ -55,6 +57,14 @@ export async function buildBundle(
       },
     ],
   })
+
+  const code = await fs.promises.readFile(bundlePath, 'utf-8')
+  const result = babel.transformSync(code, {
+    filename: bundlePath,
+    plugins: ['@babel/plugin-transform-arrow-functions'],
+    minified: true,
+  })
+  await fs.promises.writeFile(bundlePath, result?.code || '')
 
   shuldCleanFiles.add(path.resolve(bundlePath))
 
