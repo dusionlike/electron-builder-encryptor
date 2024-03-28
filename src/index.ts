@@ -5,8 +5,7 @@ import AdmZip from 'adm-zip'
 import YAML from 'yaml'
 import { log } from 'builder-util'
 import { compileToBytenode, encAes, encryptMd5, readFileMd5 } from './encrypt'
-import { buildConfig, mergeConfig } from './config'
-import { mergeDefaultConfig } from './default-config'
+import { buildConfig, loadConfig } from './config'
 import { buildBundle } from './build'
 import type { AfterPackContext } from 'electron-builder'
 
@@ -28,8 +27,8 @@ export interface RunOptions {
 export async function run(context: AfterPackContext, options: RunOptions = {}) {
   const time = Date.now()
 
-  await buildConfig()
-  const encryptorConfig = getConfig()
+  const outConfigPath = await buildConfig()
+  const encryptorConfig = await loadConfig(outConfigPath)
 
   let appOutDir = context.appOutDir
 
@@ -70,23 +69,18 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
   const mainJsCPath = path.join(mainDir, 'main-c.jsc')
 
   // 往main.js添加preload.js
-  await fs.promises.writeFile(
-    mainJsPath,
-    `${await fs.promises.readFile(
-      path.join(__dirname, 'preload.js'),
-      'utf-8'
-    )}\n${await fs.promises.readFile(mainJsPath, 'utf-8')}`,
-    'utf-8'
-  )
-
-  await mergeConfig(mainJsPath)
+  const preloadJsPath = path.join(__dirname, 'preload.js').replace(/\\/g, '/')
+  let code = await fs.promises.readFile(mainJsPath, 'utf-8')
+  code = `const __encryptorConfig = require('${preloadJsPath}').encryptorConfig;${code}`
+  await fs.promises.writeFile(mainJsPath, code, 'utf-8')
 
   const cwd = process.cwd()
   const shuldCleanFiles = new Set<string>()
 
   const mainBundlePath = await buildBundle(
     path.relative(cwd, mainJsPath),
-    shuldCleanFiles
+    shuldCleanFiles,
+    outConfigPath
   )
 
   // 将main.js加密
@@ -116,7 +110,8 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
       )
       const preloadBundlePath = await buildBundle(
         path.relative(cwd, rendererPreloadJsPath),
-        shuldCleanFiles
+        shuldCleanFiles,
+        outConfigPath
       )
 
       await compileToBytenode(
@@ -131,6 +126,13 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
       )
     }
   }
+
+  // shuldCleanFiles 筛选，仅保留 tempAppDir 下面的文件
+  Array.from(shuldCleanFiles).forEach(item => {
+    if (!item.startsWith(tempAppDir)) {
+      shuldCleanFiles.delete(item)
+    }
+  })
 
   // 清理
   for (const item of shuldCleanFiles) {
@@ -248,18 +250,6 @@ async function getAppPackage(jsonPath: string) {
     version: string
     [key: string]: any
   }
-}
-
-export function getConfig() {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  let encryptorConfig = require(path.resolve(
-    process.cwd(),
-    'node_modules/.electron-builder-encryptor/encryptor.config.js'
-  ))
-
-  encryptorConfig = encryptorConfig.default || encryptorConfig
-
-  return mergeDefaultConfig(encryptorConfig)
 }
 
 export { defineConfig } from './config'

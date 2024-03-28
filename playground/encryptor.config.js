@@ -16,7 +16,6 @@ export default defineConfig({
   preload: ['preload.js', 'preload2.js'],
   renderer: {
     entry: '../renderer',
-    output: 'resources/renderer.pkg',
   },
   syncValidationChanges: true,
 })

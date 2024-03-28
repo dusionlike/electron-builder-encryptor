@@ -1,6 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { build } from 'tsup'
+import { bundleRequire } from 'bundle-require'
+import { mergeDefaultConfig } from './default-config'
 import type { Privileges } from 'electron'
 
 const outDir = 'node_modules/.electron-builder-encryptor'
@@ -41,24 +43,18 @@ export async function buildConfig() {
       'utf-8'
     )
   }
+
+  return outConfigPath
 }
 
-export async function mergeConfig(mainJsPath: string) {
-  const preConfigCode = `"use strict";var __encryptorConfig = require('./encryptor.config.js');__encryptorConfig = __encryptorConfig.default || __encryptorConfig;`
+export async function loadConfig(filepath: string) {
+  const config = await bundleRequire({
+    filepath,
+  })
 
-  // 注入到main.js
-  await fs.promises.writeFile(
-    mainJsPath,
-    `${preConfigCode}\n${await fs.promises.readFile(mainJsPath, 'utf-8')}`,
-    'utf-8'
-  )
+  const configData = config.mod.default || config.mod
 
-  const mainJsDir = path.dirname(mainJsPath)
-
-  await fs.promises.copyFile(
-    path.join(outDir, 'encryptor.config.js'),
-    path.join(mainJsDir, 'encryptor.config.js')
-  )
+  return configData as Required<UserConfig>
 }
 
 function findConfig(dirs: string[]) {
@@ -122,5 +118,5 @@ export declare interface UserConfig {
 }
 
 export function defineConfig(arg: UserConfigExport) {
-  return arg
+  return mergeDefaultConfig(arg)
 }

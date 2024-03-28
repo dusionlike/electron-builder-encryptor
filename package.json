@@ -36,9 +36,10 @@
     "adm-zip": "^0.5.9",
     "asar": "^3.2.0",
     "builder-util": "^23.4.0",
+    "bundle-require": "^4.0.2",
     "mime": "^3.0.0",
     "original-fs": "^1.2.0",
-    "tsup": "6.2.1",
+    "tsup": "^7.3.0",
     "yaml": "^2.1.1"
   },
   "devDependencies": {

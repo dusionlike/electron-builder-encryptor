@@ -19,7 +19,7 @@ export function mergeDefaultConfig(
     preload: 'preload.js',
     renderer: {
       entry: 'renderer',
-      output: 'resources/renderer.pkg',
+      output: '',
     },
     syncValidationChanges: false,
   })

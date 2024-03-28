@@ -14,6 +14,7 @@ export default defineConfig(() => {
       entry: ['src/preload.ts'],
       skipNodeModulesBundle: true,
       format: ['cjs', 'esm'],
+      external: ['encryptor.config'],
     },
   ]
 })

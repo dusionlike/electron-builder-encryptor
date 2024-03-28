@@ -3,9 +3,13 @@ import path from 'path'
 import mime from 'mime'
 import { BrowserWindow, app, dialog, protocol } from 'electron'
 import YAML from 'yaml'
+// @ts-ignore
+import __encryptorConfig from 'encryptor.config'
 import { getAppResourcesMap } from './decrypt'
 import { readAppAsarMd5, readAppAsarMd5Sync } from './encrypt'
-import { mergeDefaultConfig } from './default-config'
+import type { UserConfig } from './config'
+
+export const encryptorConfig = __encryptorConfig as Required<UserConfig>
 
 const platform = process.platform
 let execDir = path.dirname(process.execPath)
@@ -13,8 +17,6 @@ let execDir = path.dirname(process.execPath)
 if (platform === 'darwin') {
   execDir = path.join(execDir, '..')
 }
-
-__encryptorConfig = mergeDefaultConfig(__encryptorConfig)
 
 if (__encryptorConfig.syncValidationChanges) {
   verifyModifySync()
