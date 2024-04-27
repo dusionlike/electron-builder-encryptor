@@ -40,7 +40,7 @@
     "adm-zip": "^0.5.9",
     "asar": "^3.2.0",
     "builder-util": "^23.4.0",
-    "bundle-require": "^4.0.2",
+    "bundle-require": "4.0.2",
     "esbuild-plugin-babel": "^0.2.3",
     "esbuild-plugin-babel-cjs": "^1.0.0",
     "mime": "^3.0.0",
