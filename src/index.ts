@@ -75,7 +75,7 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
   // 往main.js添加preload.js
   const preloadJsPath = path.join(__dirname, 'preload.js').replace(/\\/g, '/')
   let code = await fs.promises.readFile(mainJsPath, 'utf-8')
-  code = `const __encryptorConfig = require('${preloadJsPath}').encryptorConfig;${code}`
+  code = `const { encryptorConfig: __encryptorConfig, runRenderer: __runRenderer } = require('${preloadJsPath}');${code}`
   await fs.promises.writeFile(mainJsPath, code, 'utf-8')
 
   const cwd = process.cwd()

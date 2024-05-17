@@ -32,6 +32,10 @@ if (!__encryptorConfig.noRegisterSchemes)
 app.whenReady().then(() => {
   wacthClientModify()
 
+  if (__encryptorConfig.autoRunRenderer) runRenderer()
+})
+
+export function runRenderer() {
   let rendererPath = ''
   if (__encryptorConfig.renderer.output) {
     rendererPath = path.join(execDir, __encryptorConfig.renderer.output)
@@ -58,7 +62,7 @@ app.whenReady().then(() => {
       callback({ data: undefined })
     }
   })
-})
+}
 
 function verifyModifySync() {
   const appAsarDir = path.join(execDir, 'resources', 'app.asar')

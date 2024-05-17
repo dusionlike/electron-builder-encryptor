@@ -117,6 +117,11 @@ export declare interface UserConfig {
      * Synchronously detect whether the program has been tampered with when starting the app
      */
     syncValidationChanges?: boolean
+    /**
+     * Automatically run the renderer process after the main process is started. After setting it to false, you can use the __runRenderer() method to start it manually.
+     * @default true
+     */
+    autoRunRenderer?: boolean
 }
 ```
 

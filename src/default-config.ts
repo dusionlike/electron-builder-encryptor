@@ -22,6 +22,7 @@ export function mergeDefaultConfig(
       output: '',
     },
     syncValidationChanges: false,
+    autoRunRenderer: true,
   })
 }
 

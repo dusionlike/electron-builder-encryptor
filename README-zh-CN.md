@@ -117,6 +117,11 @@ export declare interface UserConfig {
      * 启动app时同步检测程序是否被篡改
      */
     syncValidationChanges?: boolean
+    /**
+     * 是否自动启动渲染进程，设置为false后可以使用 __runRenderer() 方法手动启动
+     * @default true
+     */
+    autoRunRenderer?: boolean
 }
 ```
 
