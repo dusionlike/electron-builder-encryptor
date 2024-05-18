@@ -35,7 +35,7 @@ app.whenReady().then(() => {
   if (__encryptorConfig.autoRunRenderer) runRenderer()
 })
 
-export function runRenderer() {
+export function runRenderer(scheme = appProtocol) {
   let rendererPath = ''
   if (__encryptorConfig.renderer.output) {
     rendererPath = path.join(execDir, __encryptorConfig.renderer.output)
@@ -49,9 +49,9 @@ export function runRenderer() {
     __encryptorConfig.key
   )
 
-  protocol.registerBufferProtocol(appProtocol, (request, callback) => {
+  protocol.registerBufferProtocol(scheme, (request, callback) => {
     try {
-      let url = request.url.replace(`${appProtocol}://apps/`, '')
+      let url = request.url.replace(`${scheme}://apps/`, '')
       url = url.split(/#|\?/)[0]
       callback({
         data: appResourcesMap.get(url),
