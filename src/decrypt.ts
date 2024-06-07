@@ -1,5 +1,4 @@
 import crypto from 'crypto'
-import { normalize } from 'path'
 import AdmZip from 'adm-zip'
 import { md5Salt } from './encrypt'
 
