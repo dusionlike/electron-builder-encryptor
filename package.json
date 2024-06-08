@@ -1,6 +1,6 @@
 {
   "name": "electron-builder-encryptor",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "simple electron package encryption tool",
   "keywords": [
     "electron",
