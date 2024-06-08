@@ -52,6 +52,7 @@ export function runRenderer(scheme = appProtocol) {
   protocol.registerBufferProtocol(scheme, (request, callback) => {
     try {
       let url = request.url.replace(`${scheme}://apps/`, '')
+      url = url.replaceAll('\\', '/') //Ensure we match the entries produced in the map
       url = url.split(/#|\?/)[0]
       callback({
         data: appResourcesMap.get(url),

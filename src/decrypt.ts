@@ -30,7 +30,10 @@ export function getAppResourcesMap(rendererBuffer: Buffer, key?: string) {
       getData: () => any
     }) => {
       if (zip.isDirectory === false) {
-        appResourcesMap.set(zip.entryName.toString(), zip.getData())
+        //Ensure that entries have forward slashes
+        //Windows gets backslashes that have to be converted
+        const entryName = zip.entryName.toString().replaceAll('\\', '/')
+        appResourcesMap.set(entryName, zip.getData())
       }
     }
   )
