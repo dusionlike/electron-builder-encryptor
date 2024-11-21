@@ -2,11 +2,12 @@
   "name": "electron-builder-encryptor-demo",
   "version": "1.0.0",
   "description": "",
+  "type": "commonjs",
   "keywords": [],
   "license": "MIT",
   "homepage": "https://github.com/dusionlike/electron-builder-encryptor#readme",
   "author": "dusionlike <751069244@qq.com>",
-  "main": "main/main.js",
+  "main": "main/main.cjs",
   "scripts": {
     "start": "electron .",
     "release": "electron-builder",
@@ -24,7 +25,7 @@
     "@types/adm-zip": "^0.5.0",
     "@types/mime": "^3.0.1",
     "electron": "^22.3.1",
-    "electron-builder": "^23.6.0",
+    "electron-builder": "^25.1.8",
     "electron-builder-encryptor": "link:.."
   }
 }

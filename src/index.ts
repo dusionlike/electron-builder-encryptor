@@ -27,6 +27,25 @@ export interface RunOptions {
 export async function run(context: AfterPackContext, options: RunOptions = {}) {
   const time = Date.now()
 
+  const porjectPackageJsonStr = await fs.promises.readFile(
+    'package.json',
+    'utf8'
+  )
+  const porjectPackageJson = JSON.parse(porjectPackageJsonStr)
+  const isPorjectEsm = porjectPackageJson.type === 'module'
+  if (isPorjectEsm) {
+    // 先改为commonjs，使用正则修改，防止格式化
+    const newPorjectPackageJsonStr = porjectPackageJsonStr.replace(
+      /"type":\s*"module"/,
+      '"type": "commonjs"'
+    )
+    await fs.promises.writeFile(
+      'package.json',
+      newPorjectPackageJsonStr,
+      'utf8'
+    )
+  }
+
   const outConfigPath = await buildConfig()
   const encryptorConfig = await loadConfig(outConfigPath)
 
@@ -51,6 +70,16 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
   const packageJson = JSON.parse(
     await fs.promises.readFile(path.join(tempAppDir, 'package.json'), 'utf8')
   )
+  if (packageJson.type === 'module') {
+    // 如果是esm，将type改为commonjs，再打包回去先
+    packageJson.type = 'commonjs'
+    await fs.promises.writeFile(
+      path.join(tempAppDir, 'package.json'),
+      JSON.stringify(packageJson, null, 2),
+      'utf8'
+    )
+    await asar.createPackage(tempAppDir, appAsarPath)
+  }
   const mainJsPath = path.join(tempAppDir, packageJson.main)
   const mainDir = path.dirname(mainJsPath)
 
@@ -191,6 +220,11 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
   )
 
   await fs.promises.rm(tempAppDir, { recursive: true })
+
+  if (isPorjectEsm) {
+    // 恢复package.json
+    await fs.promises.writeFile('package.json', porjectPackageJsonStr, 'utf8')
+  }
 
   log.info(`encrypt success! takes ${Date.now() - time}ms.`)
 }
