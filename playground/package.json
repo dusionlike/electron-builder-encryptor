@@ -2,7 +2,7 @@
   "name": "electron-builder-encryptor-demo",
   "version": "1.0.0",
   "description": "",
-  "type": "commonjs",
+  "type": "module",
   "keywords": [],
   "license": "MIT",
   "homepage": "https://github.com/dusionlike/electron-builder-encryptor#readme",
