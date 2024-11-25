@@ -7,6 +7,7 @@ import { log } from 'builder-util'
 import { compileToBytenode, encAes, encryptMd5, readFileMd5 } from './encrypt'
 import { buildConfig, loadConfig } from './config'
 import { buildBundle } from './build'
+import { findJsPath } from './utils'
 import type { AfterPackContext } from 'electron-builder'
 
 export default function (context: AfterPackContext) {
@@ -141,10 +142,10 @@ export async function run(context: AfterPackContext, options: RunOptions = {}) {
         : encryptorConfig.preload
 
     for (const _preloadJsPath of preloadJsPaths) {
-      const preloadJsName = path.basename(_preloadJsPath, '.js')
-      const rendererPreloadJsPath = path.join(mainDir, _preloadJsPath)
-      const preloadJsDir = path.dirname(rendererPreloadJsPath)
-      if (fs.existsSync(rendererPreloadJsPath)) {
+      const { name: preloadJsName } = path.parse(_preloadJsPath)
+      const rendererPreloadJsPath = findJsPath(mainDir, preloadJsName)
+      if (rendererPreloadJsPath) {
+        const preloadJsDir = path.dirname(rendererPreloadJsPath)
         const rendererPreloadJsCPath = path.join(
           preloadJsDir,
           `${preloadJsName}-c.jsc`

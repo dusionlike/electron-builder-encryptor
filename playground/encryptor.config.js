@@ -13,7 +13,7 @@ export default defineConfig({
     corsEnabled: true,
     stream: true,
   },
-  preload: ['preload.js', 'preload2.js'],
+  preload: ['preload.cjs', 'preload2.js'],
   renderer: {
     entry: '../renderer',
   },
