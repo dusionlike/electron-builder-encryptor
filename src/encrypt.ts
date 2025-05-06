@@ -28,7 +28,7 @@ export async function compileToBytenode(
 
   await fs.promises.writeFile(compilerFilePath, compilerCode, 'utf-8')
 
-  execSync(`${execPath} ${compilerFilePath}`)
+  execSync(`"${execPath}" ${compilerFilePath}`)
 
   await fs.promises.unlink(compilerFilePath)
 }
