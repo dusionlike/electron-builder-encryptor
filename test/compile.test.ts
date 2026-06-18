@@ -3,19 +3,17 @@ import os from 'os'
 import path from 'path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-const execFileSyncMock = vi.fn()
-
 vi.mock('child_process', () => ({
-  execFileSync: execFileSyncMock,
+  execFileSync: vi.fn(),
 }))
 
-import { compileToBytenode } from '../src/encrypt'
-
-afterEach(() => {
-  execFileSyncMock.mockReset()
-})
-
 describe('compileToBytenode', () => {
+  let execFileSyncMock: ReturnType<typeof vi.fn>
+
+  afterEach(() => {
+    execFileSyncMock?.mockReset()
+  })
+
   it('runs the packaged electron runtime in node mode', async () => {
     const tempDir = await fs.promises.mkdtemp(
       path.join(os.tmpdir(), 'electron-builder-encryptor-')
@@ -26,10 +24,14 @@ describe('compileToBytenode', () => {
 
     await fs.promises.writeFile(input, 'console.log("hello")', 'utf-8')
 
+    execFileSyncMock = vi.mocked((await import('child_process')).execFileSync)
+
     let compilerCode = ''
     execFileSyncMock.mockImplementation((_, args: string[]) => {
       compilerCode = fs.readFileSync(args[0], 'utf-8')
     })
+
+    const { compileToBytenode } = await import('../src/encrypt')
 
     try {
       await compileToBytenode(input, output, '/tmp/electron-app')
@@ -44,8 +46,11 @@ describe('compileToBytenode', () => {
           }),
         })
       )
+      const normalizedInput = input.replaceAll('\\', '/')
+      const normalizedOutput = output.replaceAll('\\', '/')
+
       expect(compilerCode).toContain(
-        `bytenode.compileFile('${input}', '${output}');`
+        `bytenode.compileFile('${normalizedInput}', '${normalizedOutput}');`
       )
       await expect(fs.promises.access(compilerFilePath)).rejects.toThrow()
     } finally {
