@@ -1,4 +1,4 @@
-import { execSync } from 'child_process'
+import { execFileSync } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 import crypto from 'crypto'
@@ -28,9 +28,18 @@ export async function compileToBytenode(
 
   await fs.promises.writeFile(compilerFilePath, compilerCode, 'utf-8')
 
-  execSync(`"${execPath}" ${compilerFilePath}`)
-
-  await fs.promises.unlink(compilerFilePath)
+  try {
+    execFileSync(execPath, [compilerFilePath], {
+      // Reuse the packaged Electron runtime as Node to keep bytecode ABI aligned
+      // without triggering Chromium sandbox or display initialization.
+      env: {
+        ...process.env,
+        ELECTRON_RUN_AS_NODE: '1',
+      },
+    })
+  } finally {
+    await fs.promises.rm(compilerFilePath, { force: true })
+  }
 }
 
 /**
